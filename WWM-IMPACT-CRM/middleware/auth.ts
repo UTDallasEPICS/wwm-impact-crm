@@ -1,4 +1,6 @@
 import { UserRole } from '../types/user'
+import useState from '#imports'
+
 
 export default defineNuxtRouteMiddleware((to) => {
   const user = useState('user')

@@ -20,6 +20,7 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "@nuxt/types": "^2.18.1",
     "prisma": "^6.16.3"
   }
 }

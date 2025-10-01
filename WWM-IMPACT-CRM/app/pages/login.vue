@@ -36,8 +36,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { UserRole } from '../types/user'
-import { useAuth } from '../composables/useAuth'
+import { UserRole } from '../../types/user'
+import { useAuth } from '../../composables/useAuth'
 import { useRouter } from 'vue-router'
 
 const email = ref('')
