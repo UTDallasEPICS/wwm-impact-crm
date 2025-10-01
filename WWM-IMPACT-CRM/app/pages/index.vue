@@ -7,7 +7,7 @@
     </div>
 
     <div v-else>
-      <p class="mb-2">Logged in as: <strong>{{ auth.user.profile.email }}</strong></p>
+      <p class="mb-2">Logged in as: <strong>{{ auth.user.email }}</strong></p>
       <p class="mb-4">Role: <strong>{{ auth.user.role }}</strong></p>
 
       <div v-if="auth.isAdmin">
@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAuth } from '../composables/useAuth'
+import { useAuth } from '../../composables/useAuth'
 
 const auth = useAuth()
 </script>

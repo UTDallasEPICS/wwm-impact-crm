@@ -1,6 +1,7 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { User, UserRole } from '../types/user'
+import { type User } from '../types/user'
+import { UserRole } from '../types/user'
 
 export const useAuth = () => {
   const user = ref<User | null>(null)
