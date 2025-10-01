@@ -8,7 +8,7 @@ generator client {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
+  id       String  @id @default(uuid())
   email    String  @unique
   username String?
   role     Role    @default(STANDARD)
@@ -21,39 +21,27 @@ enum Role {
   STANDARD
   ADMIN
 }
-
-model Donor {
-  id             Int           @id @default(autoincrement())
-  email          String        @unique
-  firstName      String
-  lastName       String
-  organizationId Int?
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-}
-
 model Organization {
-  id      Int                @id @default(autoincrement())
+  id      String            @id @default(uuid())
   name    String
   reports Report[]
   users   UserOrganization[]
 
-  // not sure if this is needed
-  donors Donor[]
 }
 
 model Report {
-  id             Int          @id @default(autoincrement())
+  id             String       @id @default(uuid())
   name           String
-  organizationId Int
+  organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id])
 }
 
 // not too sure if this is needed, this is for users than have access to multiple orgs
 // unless the standard user can have access to multiple orgs
 model UserOrganization {
-  id             Int @id @default(autoincrement())
-  userId         Int
-  organizationId Int
+  id             String @id @default(uuid())
+  userId         String
+  organizationId String
 
   user         User         @relation(fields: [userId], references: [id])
   organization Organization @relation(fields: [organizationId], references: [id])
