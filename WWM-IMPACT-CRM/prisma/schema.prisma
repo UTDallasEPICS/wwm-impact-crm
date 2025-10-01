@@ -8,13 +8,13 @@ generator client {
 }
 
 model User {
-  id             Int              @id @default(autoincrement())
-  email          String           @unique
-  username       String?
-  role           Role             @default(STANDARD)
-  password       String
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  username String?
+  role     Role    @default(STANDARD)
+  password String
 
-  organizations  UserOrganization[]
+  organizations UserOrganization[]
 }
 
 enum Role {
@@ -23,44 +23,40 @@ enum Role {
 }
 
 model Donor {
-  id        Int    @id @default(autoincrement())
-  email     String @unique
-  firstName String
-  lastName  String
+  id             Int           @id @default(autoincrement())
+  email          String        @unique
+  firstName      String
+  lastName       String
   organizationId Int?
   organization   Organization? @relation(fields: [organizationId], references: [id])
 }
 
 model Organization {
-  id      Int      @id @default(autoincrement())
+  id      Int                @id @default(autoincrement())
   name    String
   reports Report[]
   users   UserOrganization[]
-  
+
   // not sure if this is needed
-  donors  Donor[]
+  donors Donor[]
 }
 
 model Report {
-  id             Int           @id @default(autoincrement())
+  id             Int          @id @default(autoincrement())
   name           String
   organizationId Int
-  organization   Organization  @relation(fields: [organizationId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
 }
 
 // not too sure if this is needed, this is for users than have access to multiple orgs
 // unless the standard user can have access to multiple orgs
 model UserOrganization {
-  id              Int           @id @default(autoincrement())
-  userId          Int
-  organizationId  Int
+  id             Int @id @default(autoincrement())
+  userId         Int
+  organizationId Int
 
-  user            User          @relation(fields: [userId], references: [id])
-  organization    Organization  @relation(fields: [organizationId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
 
   @@unique([userId, organizationId])
 }
-
-
-
-
