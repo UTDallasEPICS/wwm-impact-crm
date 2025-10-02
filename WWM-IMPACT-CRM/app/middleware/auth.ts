@@ -1,5 +1,4 @@
-import { UserRole } from '../types/user'
-import useState from '#imports'
+import { UserRole } from '../../types/user'
 
 
 export default defineNuxtRouteMiddleware((to) => {
@@ -11,7 +10,8 @@ export default defineNuxtRouteMiddleware((to) => {
 
   if (to.meta.requiredRole) {
     const requiredRole = to.meta.requiredRole as UserRole
-    if (!hasRequiredRole(user.value?.role, requiredRole)) {
+    // Assuming user.value can be null, add a check
+    if (!user.value || !hasRequiredRole(user.value.role, requiredRole)) {
       return navigateTo('/unauthorized')
     }
   }
@@ -25,6 +25,10 @@ function hasRequiredRole(userRole: UserRole, requiredRole: UserRole): boolean {
     [UserRole.BASIC_USER]: 1
   }
 
+  // Ensure userRole is not null or undefined before accessing the hierarchy
+  if (!userRole) {
+    return false
+  }
+
   return roleHierarchy[userRole] >= roleHierarchy[requiredRole]
 }
-
