@@ -8,11 +8,11 @@ generator client {
 }
 
 model User {
-  id       String  @id @default(uuid())
-  email    String  @unique
-  username String?
-  role     Role    @default(STANDARD)
-  password String
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  username  String?
+  password  String
+  role      Role     @default(STANDARD)
 
   organizations UserOrganization[]
 }
@@ -21,23 +21,82 @@ enum Role {
   STANDARD
   ADMIN
 }
-model Organization {
-  id      String            @id @default(uuid())
-  name    String
-  reports Report[]
-  users   UserOrganization[]
 
+model Organization {
+  id      Int       @id @default(autoincrement())
+  name    String
+
+  users   UserOrganization[]
+  donors  Donor[]
+  funds   Fund[]
+  reports Report[]
+}
+
+model Donor {
+  id             Int            @id @default(autoincrement())
+  email          String
+  firstName      String
+  lastName       String
+  organizationId Int
+  organization   Organization   @relation(fields: [organizationId], references: [id])
+
+  donations      Donation[]
+  @@unique([organizationId, email])  // ensures uniqueness within an org
+}
+
+model Fund {
+  id             Int            @id @default(autoincrement())
+  name           String
+  organizationId Int
+  organization   Organization   @relation(fields: [organizationId], references: [id])
+
+  donations      Donation[]
+}
+
+model Campaign {
+  id        Int        @id @default(autoincrement())
+  name      String
+  startDate DateTime
+  endDate   DateTime?
+
+  donations Donation[]
+}
+
+model Donation {
+  id        Int       @id @default(autoincrement())
+  donorId   Int
+  donor     Donor     @relation(fields: [donorId], references: [id])
+
+  fundId    Int
+  fund      Fund      @relation(fields: [fundId], references: [id])
+
+  campaignId Int?
+  campaign   Campaign? @relation(fields: [campaignId], references: [id])
+
+  amount    Float
+  date      DateTime
 }
 
 model Report {
   id             String       @id @default(uuid())
   name           String
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  type           ReportType    @default(CUSTOM)
+  config         Json          // filters/metrics stored here
+
+  organizationId Int
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }
 
-// not too sure if this is needed, this is for users than have access to multiple orgs
-// unless the standard user can have access to multiple orgs
+enum ReportType {
+  ORG_KPI
+  FUND_PERFORMANCE
+  DONOR_DRILLDOWN
+  CUSTOM
+}
+
 model UserOrganization {
   id             String @id @default(uuid())
   userId         String
