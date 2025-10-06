@@ -18,16 +18,14 @@ export const useAuth = () => {
 
   const isAdmin = computed(() => user.value?.role === UserRole.ADMIN)
   const isOrgLeader = computed(() => user.value?.role === UserRole.ORGANIZATION_LEADER)
-  const isDonor = computed(() => user.value?.role === UserRole.DONOR)
   const isBasicUser = computed(() => user.value?.role === UserRole.BASIC_USER)
 
   const canAccessFeature = (requiredRole: UserRole) => {
     if (!user.value) return false
 
     const roleHierarchy = {
-      [UserRole.ADMIN]: 4,
-      [UserRole.ORGANIZATION_LEADER]: 3,
-      [UserRole.DONOR]: 2,
+      [UserRole.ADMIN]: 3,
+      [UserRole.ORGANIZATION_LEADER]: 2,
       [UserRole.BASIC_USER]: 1
     }
 
@@ -40,7 +38,6 @@ export const useAuth = () => {
     logout,
     isAdmin,
     isOrgLeader,
-    isDonor,
     isBasicUser,
     canAccessFeature
   }

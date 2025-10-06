@@ -1,7 +1,6 @@
 export enum UserRole {
   ADMIN = 'ADMIN',
   ORGANIZATION_LEADER = 'ORGANIZATION_LEADER',
-  DONOR = 'DONOR',
   BASIC_USER = 'BASIC_USER'
 }
 
@@ -20,7 +19,6 @@ export interface User {
   role: UserRole
   profile: UserProfile
   permissions: {
-    canManageDonations: boolean
     canViewReports: boolean
     canManageUsers: boolean
     canManageCampaigns: boolean

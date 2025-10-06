@@ -7,8 +7,8 @@
     </div>
 
     <div v-else>
-      <p class="mb-2">Logged in as: <strong>{{ auth.user.email }}</strong></p>
-      <p class="mb-4">Role: <strong>{{ auth.user.role }}</strong></p>
+  <p class="mb-2">Logged in as: <strong>{{ user?.profile?.email }}</strong></p>
+  <p class="mb-4">Role: <strong>{{ user?.role }}</strong></p>
 
       <div v-if="auth.isAdmin">
         <h2 class="text-xl font-semibold">Admin Panel</h2>
@@ -20,15 +20,12 @@
         <p>Manage organization data and reports.</p>
       </div>
 
-      <div v-else-if="auth.isDonor">
-        <h2 class="text-xl font-semibold">Donor Portal</h2>
-        <p>View donation history and profile.</p>
-      </div>
 
       <div v-else>
         <h2 class="text-xl font-semibold">Basic User</h2>
         <p>View public information and your profile.</p>
       </div>
+    
 
       <div class="mt-6">
         <button @click="auth.logout" class="bg-red-500 text-white px-4 py-2 rounded">Logout</button>
@@ -38,7 +35,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useAuth } from '../../composables/useAuth'
 
 const auth = useAuth()
+const user = computed(() => auth.user.value)
 </script>

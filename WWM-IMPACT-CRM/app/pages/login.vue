@@ -51,7 +51,6 @@ const handleLogin = async () => {
     id: '1',
     role: email.value.includes('admin') ? UserRole.ADMIN :
           email.value.includes('org') ? UserRole.ORGANIZATION_LEADER :
-          email.value.includes('donor') ? UserRole.DONOR :
           UserRole.BASIC_USER,
     profile: {
       firstName: 'Test',
@@ -61,7 +60,6 @@ const handleLogin = async () => {
       lastLogin: new Date()
     },
     permissions: {
-      canManageDonations: email.value.includes('admin') || email.value.includes('org'),
       canViewReports: email.value.includes('admin') || email.value.includes('org'),
       canManageUsers: email.value.includes('admin'),
       canManageCampaigns: email.value.includes('admin') || email.value.includes('org'),
