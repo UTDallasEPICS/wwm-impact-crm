@@ -8,7 +8,7 @@ generator client {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String      @id @default(uuid())
   email     String   @unique
   username  String?
   password  String
@@ -23,7 +23,7 @@ enum Role {
 }
 
 model Organization {
-  id      Int       @id @default(autoincrement())
+  id      String       @id @default(uuid())
   name    String
 
   users   UserOrganization[]
@@ -37,7 +37,7 @@ model Donor {
   email          String
   firstName      String
   lastName       String
-  organizationId Int
+  organizationId String
   organization   Organization   @relation(fields: [organizationId], references: [id])
 
   donations      Donation[]
@@ -47,7 +47,7 @@ model Donor {
 model Fund {
   id             Int            @id @default(autoincrement())
   name           String
-  organizationId Int
+  organizationId String
   organization   Organization   @relation(fields: [organizationId], references: [id])
 
   donations      Donation[]
@@ -83,7 +83,7 @@ model Report {
   type           ReportType    @default(CUSTOM)
   config         Json          // filters/metrics stored here
 
-  organizationId Int
+  organizationId String
   organization   Organization  @relation(fields: [organizationId], references: [id])
 
   createdAt      DateTime      @default(now())
