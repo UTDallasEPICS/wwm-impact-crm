@@ -27,7 +27,6 @@ export interface User {
   status: 'active' | 'inactive' | 'suspended'
   lastPasswordChange: Date
   twoFactorEnabled: boolean
-  roles: UserRole // For future expansion if needed
 }
 
 export const hasAdminAccess = (user: User) => user.role === UserRole.ADMIN

@@ -69,7 +69,7 @@ const handleLogin = async () => {
     },
     status: 'active' as 'active' | 'inactive' | 'suspended',
     lastPasswordChange: new Date(),
-    twoFactorEnabled: false
+    twoFactorEnabled: false,
   }
 
   auth.setUser(mockUser)

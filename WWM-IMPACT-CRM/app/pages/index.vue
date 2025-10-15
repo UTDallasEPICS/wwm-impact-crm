@@ -28,7 +28,7 @@
     
 
       <div class="mt-6">
-        <button @click="auth.logout" class="bg-red-500 text-white px-4 py-2 rounded">Logout</button>
+        <button @click="logout" class="bg-red-500 text-white px-4 py-2 rounded">Logout</button>
       </div>
     </div>
   </div>
@@ -37,7 +37,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAuth } from '../../composables/useAuth'
-
+const logout = () => {
+  const router = useRouter()
+  router.push('/login')
+}
 const auth = useAuth()
 const user = computed(() => auth.user.value)
 </script>
