@@ -107,3 +107,27 @@ model UserOrganization {
 
   @@unique([userId, organizationId])
 }
+
+model Note {
+  id                String   @id @default(uuid())
+  AccountNumber     String   @default(uuid()) // Account Number ID (UUID)
+  Note              String
+  CreatedName       String
+  CreatedDate       DateTime
+  Date              DateTime
+  LastModifiedName  String
+  LastModifiedDate  DateTime
+}
+
+model SoftCredits {
+  id                 String   @id @default(uuid())
+  AccountNumber      String   @default(uuid()) // UUID of the constituent account
+  Amount             Int
+  AcknowledgeStatus  Boolean
+  Reference          Int
+  CreatedName        String
+  CreatedDate        DateTime
+  LastModified       DateTime
+  DesignationNumber  Float
+}
+
