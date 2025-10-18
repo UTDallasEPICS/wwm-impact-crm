@@ -45,8 +45,10 @@ model Donor {
 }
 
 model Fund {
-  id             Int            @id @default(autoincrement())
+  id             String            @id @default(uuid())
   name           String
+  isActive  Boolean
+  isDefault Boolean
   organizationId Int
   organization   Organization   @relation(fields: [organizationId], references: [id])
 
@@ -63,19 +65,20 @@ model Campaign {
 }
 
 model Donation {
-  id        Int       @id @default(autoincrement())
-  donorId   Int
-  donor     Donor     @relation(fields: [donorId], references: [id])
+  id         Int        @id @default(autoincrement())
+  donorId    Int
+  donor      Donor      @relation(fields: [donorId], references: [id])
 
-  fundId    Int
-  fund      Fund      @relation(fields: [fundId], references: [id])
+  fundId     String
+  fund       Fund       @relation(fields: [fundId], references: [id])
 
   campaignId Int?
-  campaign   Campaign? @relation(fields: [campaignId], references: [id])
+  campaign   Campaign?  @relation(fields: [campaignId], references: [id])
 
-  amount    Float
-  date      DateTime
+  amount     Float
+  date       DateTime
 }
+
 
 model Report {
   id             Int           @id @default(autoincrement())
@@ -131,3 +134,55 @@ model SoftCredits {
   DesignationNumber  Float
 }
 
+model Appeals {
+  
+  name     String
+  isActive Boolean
+  uuid     String  @id @default(uuid())
+  goal     Int
+
+}
+
+
+model Address {
+  id            String  @id 
+  UUID          String @default(uuid())
+  AccountNumber Int
+  TypeName      String
+  Street        String
+  State         String
+  PostalCode    String
+  City          String
+  Country       String
+  County        String
+  IsBad         Boolean
+  IsPrimary     Boolean
+}
+
+
+
+
+model Transactions {
+  TransactionNumber String  
+  AccountNumber     String   @id @default(uuid()) // UUID as primary key
+  Amount            Int
+  Date              DateTime
+  CreatedDate       DateTime
+  LastModifiedDate  DateTime
+  Method            String
+  CreatedName       String
+  LastModifiedName  String
+}
+
+
+model CustomFields {
+  id                 String  @id @default(uuid()) // Primary key
+  Name               String
+  Category           String
+  PickType           String
+  DataType           String
+  AppliesTo          String
+  InactivePickValues Int
+  IsRequired         Boolean @default(false)
+  IsActive           Boolean
+}
