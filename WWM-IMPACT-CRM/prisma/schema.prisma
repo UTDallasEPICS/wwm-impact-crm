@@ -1,6 +1,5 @@
 datasource db {
   provider = "sqlite"
-  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -74,10 +73,8 @@ model Fund {
   name           String
   isActive  Boolean
   isDefault Boolean
-  organizationId Int
-  organization   Organization   @relation(fields: [organizationId], references: [id])
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  organization   Organization   @relation(fields: [organizationId], references: [id])
 
   donations Donation[]
 }
@@ -147,7 +144,7 @@ enum ReportType {
 
 model UserOrganization {
   id             String @id @default(uuid())
-  userId         String
+  userId         Int
   organizationId String
 
   user         User         @relation(fields: [userId], references: [id])
