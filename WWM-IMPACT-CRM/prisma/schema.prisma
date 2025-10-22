@@ -1,5 +1,6 @@
 datasource db {
   provider = "sqlite"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -46,8 +47,8 @@ enum Role {
 }
 
 model Organization {
-  id      Int       @id @default(autoincrement())
-  name    String
+  id   String @id @default(uuid())
+  name String
 
   users   UserOrganization[]
   donors  Donor[]
@@ -56,15 +57,16 @@ model Organization {
 }
 
 model Donor {
-  id             Int            @id @default(autoincrement())
+  id             Int          @id @default(autoincrement())
   email          String
   firstName      String
   lastName       String
-  organizationId Int
-  organization   Organization   @relation(fields: [organizationId], references: [id])
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
 
-  donations      Donation[]
-  @@unique([organizationId, email])  // ensures uniqueness within an org
+  donations Donation[]
+
+  @@unique([organizationId, email]) // ensures uniqueness within an org
 }
 
 model Fund {
@@ -74,13 +76,15 @@ model Fund {
   isDefault Boolean
   organizationId Int
   organization   Organization   @relation(fields: [organizationId], references: [id])
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
 
-  donations      Donation[]
+  donations Donation[]
 }
 
 
 model Campaign {
-  id         Int         @id @default(autoincrement())
+  id         Int        @id @default(autoincrement())
   uuid       String      @default(uuid())
   isActive   Boolean
   goal       Int
@@ -122,16 +126,16 @@ model Donation {
 
 
 model Report {
-  id             Int           @id @default(autoincrement())
-  name           String
-  type           ReportType    @default(CUSTOM)
-  config         Json          // filters/metrics stored here
+  id     String     @id @default(uuid())
+  name   String
+  type   ReportType @default(CUSTOM)
+  config Json // filters/metrics stored here
 
-  organizationId Int
-  organization   Organization  @relation(fields: [organizationId], references: [id])
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
 
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum ReportType {
@@ -142,12 +146,12 @@ enum ReportType {
 }
 
 model UserOrganization {
-  id              Int           @id @default(autoincrement())
-  userId          Int
-  organizationId  Int
+  id             String @id @default(uuid())
+  userId         String
+  organizationId String
 
-  user            User          @relation(fields: [userId], references: [id])
-  organization    Organization  @relation(fields: [organizationId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
 
   @@unique([userId, organizationId])
 }
