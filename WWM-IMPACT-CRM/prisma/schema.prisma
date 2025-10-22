@@ -78,28 +78,46 @@ model Fund {
   donations      Donation[]
 }
 
-model Campaign {
-  id        Int        @id @default(autoincrement())
-  name      String
-  startDate DateTime
-  endDate   DateTime?
 
-  donations Donation[]
+model Campaign {
+  id         Int         @id @default(autoincrement())
+  uuid       String      @default(uuid())
+  isActive   Boolean
+  goal       Int
+  name       String
+  startDate  DateTime
+  endDate    DateTime?
+
+  donations  Donation[]
 }
 
 model Donation {
-  id         Int        @id @default(autoincrement())
-  donorId    Int
-  donor      Donor      @relation(fields: [donorId], references: [id])
+  id          Int        @id @default(autoincrement())
+  donorId     Int
+  donor       Donor      @relation(fields: [donorId], references: [id])
 
-  fundId     String
-  fund       Fund       @relation(fields: [fundId], references: [id])
+  fundId      String
+  fund        Fund       @relation(fields: [fundId], references: [id])
 
   campaignId Int?
   campaign   Campaign?  @relation(fields: [campaignId], references: [id])
 
   amount     Float
   date       DateTime
+
+    
+  acknowledgementStatus Boolean
+  appealName            String?
+  campaignName          String?
+  designationNumber     Int?
+  fundName              String?
+  createdDate           DateTime
+  createdName           String?
+  lastModifiedDate      DateTime?
+  lastModifiedName      String?
+  nonDeductible         Int?
+  transactionNumber     Int
+
 }
 
 
