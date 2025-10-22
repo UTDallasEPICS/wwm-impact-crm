@@ -7,15 +7,38 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id       String  @id @default(uuid())
-  email    String  @unique
-  username String?
-  password String
-  role     Role    @default(STANDARD)
 
-  organizations UserOrganization[]
+model User {
+  id             Int                @id @default(autoincrement())
+  email          String             @unique
+  username       String?
+  password       String
+  role           Role               @default(STANDARD)
+
+  // From diagram
+  accountNum     String             @unique // Account Num: String UUID
+  note           String?
+  purpose        String?
+  transactions   Int?
+  inbound        Boolean?
+  subject        String?
+  channel        String?
+  reasonForInterest String?
+
+ level          String?
+  createdDate    DateTime?          // Created Date
+  createdName    String?
+  lastModifiedDate DateTime?        // Last Modified Date
+  lastModifiedName String?
+  askAmounts     Int
+  
+  // Relations
+  organizations  UserOrganization[]
+
 }
+
+
+
 
 enum Role {
   STANDARD
@@ -46,37 +69,58 @@ model Donor {
 }
 
 model Fund {
-  id             Int          @id @default(autoincrement())
+  id             String            @id @default(uuid())
   name           String
+  isActive  Boolean
+  isDefault Boolean
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  organization   Organization   @relation(fields: [organizationId], references: [id])
 
   donations Donation[]
 }
 
-model Campaign {
-  id        Int       @id @default(autoincrement())
-  name      String
-  startDate DateTime
-  endDate   DateTime?
 
-  donations Donation[]
+model Campaign {
+  id         Int        @id @default(autoincrement())
+  uuid       String      @default(uuid())
+  isActive   Boolean
+  goal       Int
+  name       String
+  startDate  DateTime
+  endDate    DateTime?
+
+  donations  Donation[]
 }
 
 model Donation {
-  id      Int   @id @default(autoincrement())
-  donorId Int
-  donor   Donor @relation(fields: [donorId], references: [id])
+  id          Int        @id @default(autoincrement())
+  donorId     Int
+  donor       Donor      @relation(fields: [donorId], references: [id])
 
-  fundId Int
-  fund   Fund @relation(fields: [fundId], references: [id])
+  fundId      String
+  fund        Fund       @relation(fields: [fundId], references: [id])
 
   campaignId Int?
-  campaign   Campaign? @relation(fields: [campaignId], references: [id])
+  campaign   Campaign?  @relation(fields: [campaignId], references: [id])
 
-  amount Float
-  date   DateTime
+  amount     Float
+  date       DateTime
+
+    
+  acknowledgementStatus Boolean
+  appealName            String?
+  campaignName          String?
+  designationNumber     Int?
+  fundName              String?
+  createdDate           DateTime
+  createdName           String?
+  lastModifiedDate      DateTime?
+  lastModifiedName      String?
+  nonDeductible         Int?
+  transactionNumber     Int
+
 }
+
 
 model Report {
   id     String     @id @default(uuid())
@@ -100,7 +144,7 @@ enum ReportType {
 
 model UserOrganization {
   id             String @id @default(uuid())
-  userId         String
+  userId         Int
   organizationId String
 
   user         User         @relation(fields: [userId], references: [id])
@@ -108,3 +152,230 @@ model UserOrganization {
 
   @@unique([userId, organizationId])
 }
+
+model Note {
+  id                String   @id @default(uuid())
+  AccountNumber     String   @default(uuid()) // Account Number ID (UUID)
+  Note              String
+  CreatedName       String
+  CreatedDate       DateTime
+  Date              DateTime
+  LastModifiedName  String
+  LastModifiedDate  DateTime
+}
+
+model SoftCredits {
+  id                 String   @id @default(uuid())
+  AccountNumber      String   @default(uuid()) // UUID of the constituent account
+  Amount             Int
+  AcknowledgeStatus  Boolean
+  Reference          Int
+  CreatedName        String
+  CreatedDate        DateTime
+  LastModified       DateTime
+  DesignationNumber  Float
+}
+
+model Appeals {
+  
+  name     String
+  isActive Boolean
+  uuid     String  @id @default(uuid())
+  goal     Int
+
+}
+
+
+model Address {
+  id            String  @id 
+  UUID          String @default(uuid())
+  AccountNumber Int
+  TypeName      String
+  Street        String
+  State         String
+  PostalCode    String
+  City          String
+  Country       String
+  County        String
+  IsBad         Boolean
+  IsPrimary     Boolean
+}
+
+
+
+
+model Transactions {
+  TransactionNumber String  
+  AccountNumber     String   @id @default(uuid()) // UUID as primary key
+  Amount            Int
+  Date              DateTime
+  CreatedDate       DateTime
+  LastModifiedDate  DateTime
+  Method            String
+  CreatedName       String
+  LastModifiedName  String
+}
+
+
+model CustomFields {
+  id                 String  @id @default(uuid()) // Primary key
+  Name               String
+  Category           String
+  PickType           String
+  DataType           String
+  AppliesTo          String
+  InactivePickValues Int
+  IsRequired         Boolean @default(false)
+  IsActive           Boolean
+}
+
+
+
+model Task {
+  ID                Int      @id
+  AccountNumber     String   @default(uuid()) 
+  Subject           String
+  UserName          String
+  email             String
+  Purpose           String
+  Status            Boolean
+  Channel           String    // Diagram says "Unknown", assuming String
+  CreatedDate       DateTime
+  LastModifiedDate  DateTime
+  CreatedName       String
+  LastModifiedName  String
+}
+
+
+model FileAttachments {
+  id                Int     @id
+  url               String
+  Name              String
+  TransactionNum    Int
+  DateCreated       String
+  TaskID            Int
+  NoteID            Int
+  DesignationNumber Int
+}
+
+
+model PledgePayments {
+  id                   Int      @id 
+  NonDeductable        String
+  Note                 String
+  Amount               Int
+  DesignationNumber    Int
+  AcknowledgmentStatus String
+  CreatedDate          DateTime
+  LastModifiedDate     DateTime
+  CreatedName          String
+}
+
+
+model Constituents {
+  AccountNumber       String   @id @default(uuid()) // UUID as primary key
+  CreatedDate         DateTime
+  LastModifiedDate    DateTime
+  CreatedName         String
+  LastModifiedName    String
+  SortName            String
+  RecognitionName     String
+  FullName            String
+  InformalName        String
+  FormalName          String
+  EnvelopeName        String
+  First               String
+  Last                String
+  CustomBirthYear     Int
+  CustomNetWorthDecile Int
+  CustomIncomeDecile  Int
+  CustomRecurringId   String   // UNKNOWN type in diagram, assuming String
+  Type                 String
+  Status              String
+  EmailInterestType   String
+}
+
+
+model Pledge {
+  id                      Int      @id 
+  transactionNumber       Int
+  amount                  Int
+  tributeName             String
+  appealName              String
+  frequency               String
+  writeOffAmount          Int
+  writeOffDate            DateTime
+  campaignName            String
+  lastModifiedDate        DateTime
+  lastModifiedName        String
+  acknowledgementStatus   Boolean
+  dateCreated             DateTime
+  customInstallmentAmount Int
+  customInstallmentDate   DateTime
+  nonDeductible           Int
+  fundName                String
+  firstInstallmentDate    DateTime
+  installmentAmount       Int
+  designationNumber       Int
+}
+
+
+model EmailInterest {
+  id       String  @id @default(uuid()) // UUID as primary key
+  name     String
+  isActive Boolean
+}
+
+
+model RecurringDonationPayment {
+  id                        Int      @id 
+  fundName                 String
+  designationNumber        Int
+  createdName              String
+  createdDate              DateTime
+  amount                   Int
+  acknowledgementStatus    Boolean
+  lastModifiedDate         DateTime
+  lastModifiedName         String
+  referenceDesignationNumber Int
+  transactionNumber        Int
+  nonDeductible            Int
+  note                     String
+}
+
+
+
+model Phone {
+  accountNumber String    @id @default(uuid())// AccountNumber: String
+  number        String    // Number: String
+  isPrimary     Boolean   // IsPrimary: Boolean
+  typeName      String // TypeName: Enum
+}
+
+
+model ProcessingInfo {
+  token                           String  // Token: String
+  amount                          Int     // Amount: Int
+  transactionNumber               Int     // TransactionNumber: Int
+  transactionProcessorAccountNumber Int  // TransactionProcessorAccountNumber: Int
+  uuid                           String  @id @default(uuid()) // UUID: String
+}
+
+model Interaction {
+  id                  Int      @id @default(autoincrement()) // Id: Int
+  accountNum          Int      // Account Num: Int
+  note                String   // Note: String
+  purpose             String   // Purpose: String
+  transactions        Int      // Transactions: Int
+  inbound             Boolean  // Inbound: Boolean
+  subject             String   // Subject: String
+  channel             String   // Channel: String
+  reasonForInterest   String   // Reason for Interest: String
+  level               String   // Level: String
+  createdDate         DateTime // Created Date: DateTime
+  createdName         String   // Created Name: String
+  lastModifiedDate    DateTime // Last Modified Date: DateTime
+  lastModifiedName    String   // Last Modified Name: String
+}
+
+
