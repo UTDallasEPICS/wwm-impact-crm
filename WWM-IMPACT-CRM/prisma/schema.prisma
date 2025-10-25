@@ -24,12 +24,21 @@ model User {
   channel        String?
   reasonForInterest String?
 
- level          String?
+  level          String?
   createdDate    DateTime?          // Created Date
   createdName    String?
   lastModifiedDate DateTime?        // Last Modified Date
   lastModifiedName String?
-  askAmounts     Int
+  askAmounts     Int?
+
+  // Additional Fields
+  country        String?
+  isActive       Boolean?           @default(true)
+  language       String?
+  name           String?
+  phone          String?
+  sortName       String?
+  timeZone       String?
   
   // Relations
   organizations  UserOrganization[]
@@ -68,8 +77,6 @@ model Donor {
 
 
 
-
-
 model Report {
   id     String     @id @default(uuid())
   name   String
@@ -100,9 +107,6 @@ model UserOrganization {
 
   @@unique([userId, organizationId])
 }
-
-// prisma/schema.prisma
-
 
 /* =========================
    Enums
@@ -243,9 +247,6 @@ model Constituent {
   createdDate                 DateTime? @default(now())
   createdName                 String?
 
-  //foreign keys
-  
-
   // Relations
   donor         Donor?
   emails        Email[]
@@ -260,6 +261,7 @@ model Constituent {
   files         FileAttachment[]
   refunds       Refund[]
   tasks         Task[]
+  notes         Note[]
   wallets       WalletItem[]
   tributesMade  Tribute[]        @relation("TributesByConstituent")
   tributeHonors TributeHonor[]   // who is honored/memorialized
@@ -269,10 +271,12 @@ model Constituent {
 /* Household rollup (head & members, names, etc.) */
 model Household {
   id               String   @id @default(uuid())
+  accountNumber    String   @unique
   name             String?
   fullName         String?
   informalName     String?
   formalName       String?
+  envelopeName     String?
   recognitionName  String?
   sortName         String?
   status           String?
@@ -391,6 +395,9 @@ model Donation {
   inKindType     String?
   inKindDescription String?
   inKindMarketValue Int?
+  checkDate      DateTime?
+  checkNumber    String?
+  date           DateTime?   // Transaction date
 
   // foreign keys
   campaignId     String?
@@ -452,6 +459,7 @@ model Refund {
   id             String   @id @default(uuid())
   
   amount         Int
+  date           DateTime?
   createdDate    DateTime @default(now())
   createdName    String?
   lastModifiedDate DateTime?
@@ -464,6 +472,7 @@ model Refund {
   constituent Constituent @relation(fields: [constituentId], references: [id], onDelete: Cascade)
   donation Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
   @@index([donationId])
+  @@index([constituentId])
 }
 
 /* Pledges & payments */
@@ -476,7 +485,10 @@ model Pledge {
   firstInstallmentDate DateTime
   createdDate    DateTime @default(now())
   createdName    String?
+  lastModifiedDate DateTime?
+  lastModifiedName String?
   acknowledgmentStatus Boolean?
+  note           String?
 
   constituent Constituent @relation(fields: [constituentId], references: [id], onDelete: Cascade)
   fund        Fund?       @relation(fields: [fundId], references: [id])
@@ -489,6 +501,7 @@ model PledgePayment {
   id               String   @id @default(uuid())
   pledgeId         String
   donationId       String?  // if a payment resulted in a Donation entry
+  transactionNumber Int?
   amount           Int
   createdDate      DateTime @default(now())
   createdName      String?
@@ -496,6 +509,9 @@ model PledgePayment {
   lastModifiedName String?
   nonDeductible    Int?
   referenceDesignationNumber Int?
+  acknowledgmentStatus Boolean?
+  checkDate        DateTime?
+  checkNumber      String?
   note             String?
 
   pledge   Pledge   @relation(fields: [pledgeId], references: [id], onDelete: Cascade)
@@ -515,8 +531,12 @@ model RecurringDonation {
   frequency        Frequency
   startDate        DateTime?
   endDate          DateTime?
+  note             String?
   createdDate      DateTime @default(now())
   createdName      String?
+  lastModifiedDate DateTime?
+  lastModifiedName String?
+  acknowledgmentStatus Boolean?
 
   constituent Constituent @relation(fields: [constituentId], references: [id], onDelete: Cascade)
   fund        Fund?       @relation(fields: [fundId], references: [id])
@@ -530,6 +550,7 @@ model RecurringDonationPayment {
   id               String   @id @default(uuid())
   recurringId      String
   donationId       String?  // may map to a Donation
+  transactionNumber Int?
   amount           Int
   createdDate      DateTime @default(now())
   createdName      String?
@@ -537,6 +558,7 @@ model RecurringDonationPayment {
   lastModifiedName String?
   nonDeductible    Int?
   referenceDesignationNumber Int?
+  acknowledgmentStatus Boolean?
   note             String?
 
   recurring RecurringDonation @relation(fields: [recurringId], references: [id], onDelete: Cascade)
@@ -546,16 +568,40 @@ model RecurringDonationPayment {
   @@index([donationId])
 }
 
+/* Relationships between constituents */
+model Relationship {
+  id               String   @id @default(uuid())
+  accountNumber1   String   // First constituent
+  accountNumber2   String   // Second constituent
+  role1            String?  // Role of constituent 1
+  role2            String?  // Role of constituent 2
+  relationshipRole String?  // General relationship descriptor
+  isActive         Boolean  @default(true)
+  note             String?
+  createdDate      DateTime @default(now())
+  createdName      String?
+  lastModifiedDate DateTime?
+  lastModifiedName String?
+
+  @@index([accountNumber1])
+  @@index([accountNumber2])
+}
+
 /* Soft credits */
 model SoftCredit {
   id               String   @id @default(uuid())
   donationId       String
+  interactionId    String?  // Can also be linked to interactions
   creditedToId     String   // constituent receiving credit
   amount           Int
+  designationNumber Int?
   createdDate      DateTime @default(now())
   createdName      String?
+  lastModifiedDate DateTime?
+  lastModifiedName String?
   acknowledged     Boolean? @default(false)
   reference        Int?
+  note             String?
 
   donation   Donation   @relation(fields: [donationId], references: [id], onDelete: Cascade)
   creditedTo Constituent @relation(fields: [creditedToId], references: [id])
@@ -611,15 +657,18 @@ model Interaction {
   readinessForAsk       String?
   reasonForInterest     String?
   invitedBy             String?
-  ambassadors           Ambassadors[]  // simple list
+  askers                String?
   askAmount             Int?
   askByWhen             DateTime?
   teamLeader            String?
   tableCaptains         String?
   levelsOfInterest      String?
   inbound               Boolean?
+  note                  String?
 
   constituent Constituent @relation(fields: [constituentId], references: [id], onDelete: Cascade)
+  ambassadors Ambassadors[]
+  buckets     Bucket[]
   files       FileAttachment[]
   transactions Donation[] @relation("InteractionDonations") // optional if linking
 
@@ -631,20 +680,68 @@ model Ambassadors {
   name      String
   interactionId String
   interaction Interaction @relation(fields: [interactionId], references: [id], onDelete: Cascade)
+  
+  @@index([interactionId])
 }
+
+model Bucket {
+  id            String   @id @default(uuid())
+  name          String
+  interactionId String
+  interaction   Interaction @relation(fields: [interactionId], references: [id], onDelete: Cascade)
+  
+  @@index([interactionId])
+}
+
+/* Notes attached to constituents or other entities */
+model Note {
+  id               String   @id @default(uuid())
+  constituentId    String?
+  note             String
+  createdDate      DateTime @default(now())
+  createdName      String?
+  
+  constituent Constituent? @relation(fields: [constituentId], references: [id], onDelete: Cascade)
+  
+  @@index([constituentId])
+}
+
 /* Tasks (lightweight CRM tasks) */
 model Task {
   id               String   @id @default(uuid())
   constituentId    String?
   name             String
   notes            String?
+  note             String?
   shouldApplySoftCredit Boolean? @default(false)
-  status           String? // open/closed/etc.
+  status           Boolean? // completed status
+  eventStatus      String?  // status descriptor
+  eventType        String?
+  purpose          String?
+  subject          String?
+  ambassador       String?
+  askers           String?
+  askAmount        Int?
+  buckets          String?
+  channel          String?
+  invitedBy        String?
+  levelsOfInterest String?
+  readinessForAsk  String?
+  teamLeader       String?
+  tableCaptains    String?
+  isActive         Boolean? @default(true)
+  userName         String?
   createdDate      DateTime @default(now())
+  createdName      String?
+  lastModifiedDate DateTime?
+  lastModifiedName String?
   completedDate    DateTime?
+  date             DateTime?
 
   constituent Constituent? @relation(fields: [constituentId], references: [id])
   files       FileAttachment[]
+  
+  @@index([constituentId])
 }
 
 /* Tributes (honor/memorial) + who is notified */
@@ -758,4 +855,3 @@ model CustomValue {
   @@index([entityType, entityId])
   @@unique([fieldId, entityType, entityId]) // one value per entity per field
 }
-
