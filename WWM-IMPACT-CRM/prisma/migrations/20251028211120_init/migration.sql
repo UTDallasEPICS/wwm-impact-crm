@@ -1,14 +1,82 @@
-/*
-  Warnings:
+-- CreateTable
+CREATE TABLE "User" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "email" TEXT NOT NULL,
+    "username" TEXT,
+    "password" TEXT,
+    "role" TEXT NOT NULL DEFAULT 'STANDARD',
+    "accountNum" TEXT NOT NULL,
+    "note" TEXT,
+    "purpose" TEXT,
+    "transactions" INTEGER,
+    "inbound" BOOLEAN,
+    "subject" TEXT,
+    "channel" TEXT,
+    "reasonForInterest" TEXT,
+    "level" TEXT,
+    "createdDate" DATETIME,
+    "createdName" TEXT,
+    "lastModifiedDate" DATETIME,
+    "lastModifiedName" TEXT,
+    "askAmounts" INTEGER,
+    "country" TEXT,
+    "isActive" BOOLEAN DEFAULT true,
+    "language" TEXT,
+    "name" TEXT,
+    "phone" TEXT,
+    "sortName" TEXT,
+    "timeZone" TEXT
+);
 
-  - The primary key for the `Campaign` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - The primary key for the `Donation` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - You are about to drop the column `date` on the `Donation` table. All the data in the column will be lost.
-  - The primary key for the `Donor` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - The primary key for the `Fund` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - Added the required column `constituentId` to the `Donation` table without a default value. This is not possible if the table is not empty.
+-- CreateTable
+CREATE TABLE "Organization" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL
+);
 
-*/
+-- CreateTable
+CREATE TABLE "Donor" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "email" TEXT NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "constituentId" TEXT NOT NULL,
+    CONSTRAINT "Donor_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Donor_constituentId_fkey" FOREIGN KEY ("constituentId") REFERENCES "Constituent" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Report" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "type" TEXT NOT NULL DEFAULT 'CUSTOM',
+    "config" JSONB NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Report_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "UserOrganization" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    CONSTRAINT "UserOrganization_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "UserOrganization_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Fund" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "isActive" BOOLEAN DEFAULT true,
+    "isDefault" BOOLEAN DEFAULT false,
+    "organizationId" TEXT NOT NULL,
+    CONSTRAINT "Fund_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
 -- CreateTable
 CREATE TABLE "Constituent" (
     "id" TEXT NOT NULL PRIMARY KEY,
@@ -45,10 +113,12 @@ CREATE TABLE "Constituent" (
 -- CreateTable
 CREATE TABLE "Household" (
     "id" TEXT NOT NULL PRIMARY KEY,
+    "accountNumber" TEXT NOT NULL,
     "name" TEXT,
     "fullName" TEXT,
     "informalName" TEXT,
     "formalName" TEXT,
+    "envelopeName" TEXT,
     "recognitionName" TEXT,
     "sortName" TEXT,
     "status" TEXT,
@@ -108,6 +178,16 @@ CREATE TABLE "Address" (
 );
 
 -- CreateTable
+CREATE TABLE "Campaign" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "goal" TEXT,
+    "startDate" DATETIME,
+    "endDate" DATETIME,
+    "isActive" BOOLEAN DEFAULT true
+);
+
+-- CreateTable
 CREATE TABLE "Appeal" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "campaignId" TEXT NOT NULL,
@@ -120,6 +200,46 @@ CREATE TABLE "Designation" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "number" INTEGER NOT NULL,
     "name" TEXT
+);
+
+-- CreateTable
+CREATE TABLE "Donation" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "transactionNumber" INTEGER,
+    "amount" REAL NOT NULL,
+    "nonDeductible" INTEGER,
+    "method" TEXT,
+    "inKindType" TEXT,
+    "inKindDescription" TEXT,
+    "inKindMarketValue" INTEGER,
+    "checkDate" DATETIME,
+    "checkNumber" TEXT,
+    "date" DATETIME,
+    "campaignId" TEXT,
+    "appealId" TEXT,
+    "fundId" TEXT,
+    "designationId" TEXT,
+    "donorId" TEXT NOT NULL,
+    "interactionLinkId" TEXT,
+    "tributeId" TEXT,
+    "processorAccountId" TEXT,
+    "constituentId" TEXT NOT NULL,
+    "acknowledgmentStatus" BOOLEAN,
+    "createdDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdName" TEXT,
+    "lastModifiedDate" DATETIME,
+    "lastModifiedName" TEXT,
+    "note" TEXT,
+    "isCompanyMatch" BOOLEAN DEFAULT false,
+    "paymentToken" TEXT,
+    CONSTRAINT "Donation_constituentId_fkey" FOREIGN KEY ("constituentId") REFERENCES "Constituent" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "Donation_campaignId_fkey" FOREIGN KEY ("campaignId") REFERENCES "Campaign" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Donation_appealId_fkey" FOREIGN KEY ("appealId") REFERENCES "Appeal" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Donation_fundId_fkey" FOREIGN KEY ("fundId") REFERENCES "Fund" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Donation_designationId_fkey" FOREIGN KEY ("designationId") REFERENCES "Designation" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Donation_tributeId_fkey" FOREIGN KEY ("tributeId") REFERENCES "Tribute" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Donation_donorId_fkey" FOREIGN KEY ("donorId") REFERENCES "Donor" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "Donation_interactionLinkId_fkey" FOREIGN KEY ("interactionLinkId") REFERENCES "Interaction" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -137,6 +257,7 @@ CREATE TABLE "ProcessingInfo" (
 CREATE TABLE "Refund" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "amount" INTEGER NOT NULL,
+    "date" DATETIME,
     "createdDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdName" TEXT,
     "lastModifiedDate" DATETIME,
@@ -158,7 +279,10 @@ CREATE TABLE "Pledge" (
     "firstInstallmentDate" DATETIME NOT NULL,
     "createdDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdName" TEXT,
+    "lastModifiedDate" DATETIME,
+    "lastModifiedName" TEXT,
     "acknowledgmentStatus" BOOLEAN,
+    "note" TEXT,
     CONSTRAINT "Pledge_constituentId_fkey" FOREIGN KEY ("constituentId") REFERENCES "Constituent" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "Pledge_fundId_fkey" FOREIGN KEY ("fundId") REFERENCES "Fund" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
@@ -168,6 +292,7 @@ CREATE TABLE "PledgePayment" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "pledgeId" TEXT NOT NULL,
     "donationId" TEXT,
+    "transactionNumber" INTEGER,
     "amount" INTEGER NOT NULL,
     "createdDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdName" TEXT,
@@ -175,6 +300,9 @@ CREATE TABLE "PledgePayment" (
     "lastModifiedName" TEXT,
     "nonDeductible" INTEGER,
     "referenceDesignationNumber" INTEGER,
+    "acknowledgmentStatus" BOOLEAN,
+    "checkDate" DATETIME,
+    "checkNumber" TEXT,
     "note" TEXT,
     CONSTRAINT "PledgePayment_pledgeId_fkey" FOREIGN KEY ("pledgeId") REFERENCES "Pledge" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "PledgePayment_donationId_fkey" FOREIGN KEY ("donationId") REFERENCES "Donation" ("id") ON DELETE SET NULL ON UPDATE CASCADE
@@ -190,8 +318,12 @@ CREATE TABLE "RecurringDonation" (
     "frequency" TEXT NOT NULL,
     "startDate" DATETIME,
     "endDate" DATETIME,
+    "note" TEXT,
     "createdDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdName" TEXT,
+    "lastModifiedDate" DATETIME,
+    "lastModifiedName" TEXT,
+    "acknowledgmentStatus" BOOLEAN,
     CONSTRAINT "RecurringDonation_constituentId_fkey" FOREIGN KEY ("constituentId") REFERENCES "Constituent" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "RecurringDonation_fundId_fkey" FOREIGN KEY ("fundId") REFERENCES "Fund" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "RecurringDonation_designationId_fkey" FOREIGN KEY ("designationId") REFERENCES "Designation" ("id") ON DELETE SET NULL ON UPDATE CASCADE
@@ -202,6 +334,7 @@ CREATE TABLE "RecurringDonationPayment" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "recurringId" TEXT NOT NULL,
     "donationId" TEXT,
+    "transactionNumber" INTEGER,
     "amount" INTEGER NOT NULL,
     "createdDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdName" TEXT,
@@ -209,21 +342,43 @@ CREATE TABLE "RecurringDonationPayment" (
     "lastModifiedName" TEXT,
     "nonDeductible" INTEGER,
     "referenceDesignationNumber" INTEGER,
+    "acknowledgmentStatus" BOOLEAN,
     "note" TEXT,
     CONSTRAINT "RecurringDonationPayment_recurringId_fkey" FOREIGN KEY ("recurringId") REFERENCES "RecurringDonation" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "RecurringDonationPayment_donationId_fkey" FOREIGN KEY ("donationId") REFERENCES "Donation" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
+CREATE TABLE "Relationship" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "accountNumber1" TEXT NOT NULL,
+    "accountNumber2" TEXT NOT NULL,
+    "role1" TEXT,
+    "role2" TEXT,
+    "relationshipRole" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "note" TEXT,
+    "createdDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdName" TEXT,
+    "lastModifiedDate" DATETIME,
+    "lastModifiedName" TEXT
+);
+
+-- CreateTable
 CREATE TABLE "SoftCredit" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "donationId" TEXT NOT NULL,
+    "interactionId" TEXT,
     "creditedToId" TEXT NOT NULL,
     "amount" INTEGER NOT NULL,
+    "designationNumber" INTEGER,
     "createdDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdName" TEXT,
+    "lastModifiedDate" DATETIME,
+    "lastModifiedName" TEXT,
     "acknowledged" BOOLEAN DEFAULT false,
     "reference" INTEGER,
+    "note" TEXT,
     CONSTRAINT "SoftCredit_donationId_fkey" FOREIGN KEY ("donationId") REFERENCES "Donation" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "SoftCredit_creditedToId_fkey" FOREIGN KEY ("creditedToId") REFERENCES "Constituent" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
@@ -266,12 +421,14 @@ CREATE TABLE "Interaction" (
     "readinessForAsk" TEXT,
     "reasonForInterest" TEXT,
     "invitedBy" TEXT,
+    "askers" TEXT,
     "askAmount" INTEGER,
     "askByWhen" DATETIME,
     "teamLeader" TEXT,
     "tableCaptains" TEXT,
     "levelsOfInterest" TEXT,
     "inbound" BOOLEAN,
+    "note" TEXT,
     CONSTRAINT "Interaction_constituentId_fkey" FOREIGN KEY ("constituentId") REFERENCES "Constituent" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -284,15 +441,54 @@ CREATE TABLE "Ambassadors" (
 );
 
 -- CreateTable
+CREATE TABLE "Bucket" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "interactionId" TEXT NOT NULL,
+    CONSTRAINT "Bucket_interactionId_fkey" FOREIGN KEY ("interactionId") REFERENCES "Interaction" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Note" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "constituentId" TEXT,
+    "note" TEXT NOT NULL,
+    "createdDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdName" TEXT,
+    CONSTRAINT "Note_constituentId_fkey" FOREIGN KEY ("constituentId") REFERENCES "Constituent" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
 CREATE TABLE "Task" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "constituentId" TEXT,
     "name" TEXT NOT NULL,
     "notes" TEXT,
+    "note" TEXT,
     "shouldApplySoftCredit" BOOLEAN DEFAULT false,
-    "status" TEXT,
+    "status" BOOLEAN,
+    "eventStatus" TEXT,
+    "eventType" TEXT,
+    "purpose" TEXT,
+    "subject" TEXT,
+    "ambassador" TEXT,
+    "askers" TEXT,
+    "askAmount" INTEGER,
+    "buckets" TEXT,
+    "channel" TEXT,
+    "invitedBy" TEXT,
+    "levelsOfInterest" TEXT,
+    "readinessForAsk" TEXT,
+    "teamLeader" TEXT,
+    "tableCaptains" TEXT,
+    "isActive" BOOLEAN DEFAULT true,
+    "userName" TEXT,
     "createdDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdName" TEXT,
+    "lastModifiedDate" DATETIME,
+    "lastModifiedName" TEXT,
     "completedDate" DATETIME,
+    "date" DATETIME,
     CONSTRAINT "Task_constituentId_fkey" FOREIGN KEY ("constituentId") REFERENCES "Constituent" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
@@ -382,89 +578,26 @@ CREATE TABLE "CustomValue" (
     CONSTRAINT "CustomValue_fieldId_fkey" FOREIGN KEY ("fieldId") REFERENCES "CustomField" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- RedefineTables
-PRAGMA defer_foreign_keys=ON;
-PRAGMA foreign_keys=OFF;
-CREATE TABLE "new_Campaign" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "name" TEXT NOT NULL,
-    "goal" TEXT,
-    "startDate" DATETIME,
-    "endDate" DATETIME,
-    "isActive" BOOLEAN DEFAULT true
-);
-INSERT INTO "new_Campaign" ("endDate", "id", "name", "startDate") SELECT "endDate", "id", "name", "startDate" FROM "Campaign";
-DROP TABLE "Campaign";
-ALTER TABLE "new_Campaign" RENAME TO "Campaign";
-CREATE TABLE "new_Donation" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "transactionNumber" INTEGER,
-    "constituentId" TEXT NOT NULL,
-    "amount" REAL NOT NULL,
-    "nonDeductible" INTEGER,
-    "method" TEXT,
-    "inKindType" TEXT,
-    "inKindDescription" TEXT,
-    "inKindMarketValue" INTEGER,
-    "campaignId" TEXT,
-    "appealId" TEXT,
-    "fundId" TEXT,
-    "designationId" TEXT,
-    "donorId" TEXT NOT NULL,
-    "interactionLinkId" TEXT,
-    "tributeId" TEXT,
-    "processorAccountId" TEXT,
-    "acknowledgmentStatus" BOOLEAN,
-    "createdDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "createdName" TEXT,
-    "lastModifiedDate" DATETIME,
-    "lastModifiedName" TEXT,
-    "note" TEXT,
-    "isCompanyMatch" BOOLEAN DEFAULT false,
-    "paymentToken" TEXT,
-    CONSTRAINT "Donation_constituentId_fkey" FOREIGN KEY ("constituentId") REFERENCES "Constituent" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "Donation_campaignId_fkey" FOREIGN KEY ("campaignId") REFERENCES "Campaign" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT "Donation_appealId_fkey" FOREIGN KEY ("appealId") REFERENCES "Appeal" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT "Donation_fundId_fkey" FOREIGN KEY ("fundId") REFERENCES "Fund" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT "Donation_designationId_fkey" FOREIGN KEY ("designationId") REFERENCES "Designation" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT "Donation_tributeId_fkey" FOREIGN KEY ("tributeId") REFERENCES "Tribute" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT "Donation_donorId_fkey" FOREIGN KEY ("donorId") REFERENCES "Donor" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "Donation_interactionLinkId_fkey" FOREIGN KEY ("interactionLinkId") REFERENCES "Interaction" ("id") ON DELETE SET NULL ON UPDATE CASCADE
-);
-INSERT INTO "new_Donation" ("amount", "campaignId", "donorId", "fundId", "id") SELECT "amount", "campaignId", "donorId", "fundId", "id" FROM "Donation";
-DROP TABLE "Donation";
-ALTER TABLE "new_Donation" RENAME TO "Donation";
-CREATE UNIQUE INDEX "Donation_transactionNumber_key" ON "Donation"("transactionNumber");
-CREATE INDEX "Donation_constituentId_idx" ON "Donation"("constituentId");
-CREATE INDEX "Donation_campaignId_appealId_fundId_designationId_idx" ON "Donation"("campaignId", "appealId", "fundId", "designationId");
-CREATE TABLE "new_Donor" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "email" TEXT NOT NULL,
-    "firstName" TEXT NOT NULL,
-    "lastName" TEXT NOT NULL,
-    "organizationId" TEXT NOT NULL,
-    CONSTRAINT "Donor_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
-);
-INSERT INTO "new_Donor" ("email", "firstName", "id", "lastName", "organizationId") SELECT "email", "firstName", "id", "lastName", "organizationId" FROM "Donor";
-DROP TABLE "Donor";
-ALTER TABLE "new_Donor" RENAME TO "Donor";
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_accountNum_key" ON "User"("accountNum");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Donor_constituentId_key" ON "Donor"("constituentId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Donor_organizationId_email_key" ON "Donor"("organizationId", "email");
-CREATE TABLE "new_Fund" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "name" TEXT NOT NULL,
-    "isActive" BOOLEAN DEFAULT true,
-    "isDefault" BOOLEAN DEFAULT false,
-    "organizationId" TEXT NOT NULL,
-    CONSTRAINT "Fund_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
-);
-INSERT INTO "new_Fund" ("id", "name", "organizationId") SELECT "id", "name", "organizationId" FROM "Fund";
-DROP TABLE "Fund";
-ALTER TABLE "new_Fund" RENAME TO "Fund";
-PRAGMA foreign_keys=ON;
-PRAGMA defer_foreign_keys=OFF;
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserOrganization_userId_organizationId_key" ON "UserOrganization"("userId", "organizationId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Constituent_accountNumber_key" ON "Constituent"("accountNumber");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Household_accountNumber_key" ON "Household"("accountNumber");
 
 -- CreateIndex
 CREATE INDEX "HouseholdMember_constituentId_idx" ON "HouseholdMember"("constituentId");
@@ -488,10 +621,22 @@ CREATE INDEX "Appeal_campaignId_idx" ON "Appeal"("campaignId");
 CREATE UNIQUE INDEX "Designation_number_key" ON "Designation"("number");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Donation_transactionNumber_key" ON "Donation"("transactionNumber");
+
+-- CreateIndex
+CREATE INDEX "Donation_constituentId_idx" ON "Donation"("constituentId");
+
+-- CreateIndex
+CREATE INDEX "Donation_campaignId_appealId_fundId_designationId_idx" ON "Donation"("campaignId", "appealId", "fundId", "designationId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "ProcessingInfo_donationId_key" ON "ProcessingInfo"("donationId");
 
 -- CreateIndex
 CREATE INDEX "Refund_donationId_idx" ON "Refund"("donationId");
+
+-- CreateIndex
+CREATE INDEX "Refund_constituentId_idx" ON "Refund"("constituentId");
 
 -- CreateIndex
 CREATE INDEX "Pledge_constituentId_idx" ON "Pledge"("constituentId");
@@ -512,6 +657,12 @@ CREATE INDEX "RecurringDonationPayment_recurringId_idx" ON "RecurringDonationPay
 CREATE INDEX "RecurringDonationPayment_donationId_idx" ON "RecurringDonationPayment"("donationId");
 
 -- CreateIndex
+CREATE INDEX "Relationship_accountNumber1_idx" ON "Relationship"("accountNumber1");
+
+-- CreateIndex
+CREATE INDEX "Relationship_accountNumber2_idx" ON "Relationship"("accountNumber2");
+
+-- CreateIndex
 CREATE INDEX "SoftCredit_donationId_idx" ON "SoftCredit"("donationId");
 
 -- CreateIndex
@@ -528,6 +679,18 @@ CREATE INDEX "FileAttachment_taskLinkId_idx" ON "FileAttachment"("taskLinkId");
 
 -- CreateIndex
 CREATE INDEX "Interaction_constituentId_idx" ON "Interaction"("constituentId");
+
+-- CreateIndex
+CREATE INDEX "Ambassadors_interactionId_idx" ON "Ambassadors"("interactionId");
+
+-- CreateIndex
+CREATE INDEX "Bucket_interactionId_idx" ON "Bucket"("interactionId");
+
+-- CreateIndex
+CREATE INDEX "Note_constituentId_idx" ON "Note"("constituentId");
+
+-- CreateIndex
+CREATE INDEX "Task_constituentId_idx" ON "Task"("constituentId");
 
 -- CreateIndex
 CREATE INDEX "TributeHonor_tributeId_idx" ON "TributeHonor"("tributeId");
