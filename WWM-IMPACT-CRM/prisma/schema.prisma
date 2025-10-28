@@ -43,7 +43,6 @@ model User {
   
   // Relations
   organizations  UserOrganization[]
-
 }
 
 enum Role {
@@ -100,7 +99,7 @@ enum ReportType {
 
 model UserOrganization {
   id             String @id @default(uuid())
-  userId         Int
+  userId         String
   organizationId String
 
   user         User         @relation(fields: [userId], references: [id])
