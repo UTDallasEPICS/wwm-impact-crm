@@ -7,6 +7,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
+
 model User {
   id             String             @id @default(uuid())
   email          String             @unique
@@ -99,7 +100,7 @@ enum ReportType {
 
 model UserOrganization {
   id             String @id @default(uuid())
-  userId         String
+  userId         Int
   organizationId String
 
   user         User         @relation(fields: [userId], references: [id])
