@@ -9,10 +9,10 @@ generator client {
 
 
 model User {
-  id             Int                @id @default(autoincrement())
+  id             String             @id @default(uuid())
   email          String             @unique
   username       String?
-  password       String
+  password       String?
   role           Role               @default(STANDARD)
 
   // From diagram
@@ -25,25 +25,31 @@ model User {
   channel        String?
   reasonForInterest String?
 
- level          String?
+  level          String?
   createdDate    DateTime?          // Created Date
   createdName    String?
   lastModifiedDate DateTime?        // Last Modified Date
   lastModifiedName String?
-  askAmounts     Int
+  askAmounts     Int?
+
+  // Additional Fields
+  country        String?
+  isActive       Boolean?           @default(true)
+  language       String?
+  name           String?
+  phone          String?
+  sortName       String?
+  timeZone       String?
   
   // Relations
   organizations  UserOrganization[]
-
 }
-
-
-
 
 enum Role {
   STANDARD
   ADMIN
 }
+
 
 model Organization {
   id   String @id @default(uuid())
@@ -56,7 +62,7 @@ model Organization {
 }
 
 model Donor {
-  id             Int          @id @default(autoincrement())
+  id             String          @id @default(uuid())
   email          String
   firstName      String
   lastName       String
@@ -64,62 +70,11 @@ model Donor {
   organization   Organization @relation(fields: [organizationId], references: [id])
 
   donations Donation[]
-
+  constituentId  String @unique
+  constituent    Constituent @relation(fields: [constituentId], references: [id], onDelete: Cascade)
   @@unique([organizationId, email]) // ensures uniqueness within an org
 }
 
-model Fund {
-  id             String            @id @default(uuid())
-  name           String
-  isActive  Boolean
-  isDefault Boolean
-  organizationId String
-  organization   Organization   @relation(fields: [organizationId], references: [id])
-
-  donations Donation[]
-}
-
-
-model Campaign {
-  id         Int        @id @default(autoincrement())
-  uuid       String      @default(uuid())
-  isActive   Boolean
-  goal       Int
-  name       String
-  startDate  DateTime
-  endDate    DateTime?
-
-  donations  Donation[]
-}
-
-model Donation {
-  id          Int        @id @default(autoincrement())
-  donorId     Int
-  donor       Donor      @relation(fields: [donorId], references: [id])
-
-  fundId      String
-  fund        Fund       @relation(fields: [fundId], references: [id])
-
-  campaignId Int?
-  campaign   Campaign?  @relation(fields: [campaignId], references: [id])
-
-  amount     Float
-  date       DateTime
-
-    
-  acknowledgementStatus Boolean
-  appealName            String?
-  campaignName          String?
-  designationNumber     Int?
-  fundName              String?
-  createdDate           DateTime
-  createdName           String?
-  lastModifiedDate      DateTime?
-  lastModifiedName      String?
-  nonDeductible         Int?
-  transactionNumber     Int
-
-}
 
 
 model Report {
@@ -144,7 +99,7 @@ enum ReportType {
 
 model UserOrganization {
   id             String @id @default(uuid())
-  userId         Int
+  userId         String
   organizationId String
 
   user         User         @relation(fields: [userId], references: [id])
@@ -153,229 +108,750 @@ model UserOrganization {
   @@unique([userId, organizationId])
 }
 
-model Note {
-  id                String   @id @default(uuid())
-  AccountNumber     String   @default(uuid()) // Account Number ID (UUID)
-  Note              String
-  CreatedName       String
-  CreatedDate       DateTime
-  Date              DateTime
-  LastModifiedName  String
-  LastModifiedDate  DateTime
+/* =========================
+   Enums
+   ========================= */
+enum Gender {
+  UNKNOWN
+  MALE
+  FEMALE
+  NON_BINARY
 }
 
-model SoftCredits {
-  id                 String   @id @default(uuid())
-  AccountNumber      String   @default(uuid()) // UUID of the constituent account
-  Amount             Int
-  AcknowledgeStatus  Boolean
-  Reference          Int
-  CreatedName        String
-  CreatedDate        DateTime
-  LastModified       DateTime
-  DesignationNumber  Float
+enum AddressType {
+  HOME
+  WORK
+  BILLING
+  SHIPPING
+  OTHER
 }
 
-model Appeals {
-  
-  name     String
-  isActive Boolean
-  uuid     String  @id @default(uuid())
-  goal     Int
-
+enum PhoneType {
+  MOBILE
+  HOME
+  WORK
+  OTHER
 }
 
-
-model Address {
-  id            String  @id 
-  UUID          String @default(uuid())
-  AccountNumber Int
-  TypeName      String
-  Street        String
-  State         String
-  PostalCode    String
-  City          String
-  Country       String
-  County        String
-  IsBad         Boolean
-  IsPrimary     Boolean
+enum EmailType {
+  PERSONAL
+  WORK
+  OTHER
 }
 
-
-
-
-model Transactions {
-  TransactionNumber String  
-  AccountNumber     String   @id @default(uuid()) // UUID as primary key
-  Amount            Int
-  Date              DateTime
-  CreatedDate       DateTime
-  LastModifiedDate  DateTime
-  Method            String
-  CreatedName       String
-  LastModifiedName  String
+enum EventStatus {
+  PLANNED
+  ACTIVE
+  COMPLETED
+  CANCELED
 }
 
-
-model CustomFields {
-  id                 String  @id @default(uuid()) // Primary key
-  Name               String
-  Category           String
-  PickType           String
-  DataType           String
-  AppliesTo          String
-  InactivePickValues Int
-  IsRequired         Boolean @default(false)
-  IsActive           Boolean
+enum EventType {
+  MEETING
+  CALL
+  EMAIL
+  IN_PERSON
+  FUNDRAISER
+  OTHER
 }
 
-
-
-model Task {
-  ID                Int      @id
-  AccountNumber     String   @default(uuid()) 
-  Subject           String
-  UserName          String
-  email             String
-  Purpose           String
-  Status            Boolean
-  Channel           String    // Diagram says "Unknown", assuming String
-  CreatedDate       DateTime
-  LastModifiedDate  DateTime
-  CreatedName       String
-  LastModifiedName  String
+enum DonationMethod {
+  CREDIT_CARD
+  ACH
+  CHECK
+  CASH
+  IN_KIND
+  OTHER
 }
 
-
-model FileAttachments {
-  id                Int     @id
-  url               String
-  Name              String
-  TransactionNum    Int
-  DateCreated       String
-  TaskID            Int
-  NoteID            Int
-  DesignationNumber Int
+enum Frequency {
+  ONE_TIME
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
 }
 
-
-model PledgePayments {
-  id                   Int      @id 
-  NonDeductable        String
-  Note                 String
-  Amount               Int
-  DesignationNumber    Int
-  AcknowledgmentStatus String
-  CreatedDate          DateTime
-  LastModifiedDate     DateTime
-  CreatedName          String
+enum DataType {
+  STRING
+  INT
+  FLOAT
+  BOOLEAN
+  DATE
+  JSON
+  PICKLIST
 }
 
-
-model Constituents {
-  AccountNumber       String   @id @default(uuid()) // UUID as primary key
-  CreatedDate         DateTime
-  LastModifiedDate    DateTime
-  CreatedName         String
-  LastModifiedName    String
-  SortName            String
-  RecognitionName     String
-  FullName            String
-  InformalName        String
-  FormalName          String
-  EnvelopeName        String
-  First               String
-  Last                String
-  CustomBirthYear     Int
-  CustomNetWorthDecile Int
-  CustomIncomeDecile  Int
-  CustomRecurringId   String   // UNKNOWN type in diagram, assuming String
-  Type                 String
-  Status              String
-  EmailInterestType   String
+enum AppliesTo {
+  CONSTITUENT
+  DONATION
+  PLEDGE
+  RECURRING_DONATION
+  INTERACTION
+  CAMPAIGN
+  FUND
+  TRIBUTE
+  TASK
+  FILE_ATTACHMENT
+  ADDRESS
+  EMAIL
+  PHONE
 }
 
+/* =========================
+   Core Constituency
+   ========================= */
+model Fund {
+  id        String  @id @default(uuid())
+  name      String
+  isActive  Boolean? @default(true)
+  isDefault Boolean? @default(false)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
 
-model Pledge {
-  id                      Int      @id 
-  transactionNumber       Int
-  amount                  Int
-  tributeName             String
-  appealName              String
-  frequency               String
-  writeOffAmount          Int
-  writeOffDate            DateTime
-  campaignName            String
-  lastModifiedDate        DateTime
-  lastModifiedName        String
-  acknowledgementStatus   Boolean
-  dateCreated             DateTime
-  customInstallmentAmount Int
-  customInstallmentDate   DateTime
-  nonDeductible           Int
-  fundName                String
-  firstInstallmentDate    DateTime
-  installmentAmount       Int
-  designationNumber       Int
+  pledgeFunds Pledge[]
+  donations Donation[]
+  recurringDonations RecurringDonation[]
+
+}
+model Constituent {
+  id                         String   @id @default(uuid())
+  accountNumber              String   @unique // external key if present
+  type                       String?  // Individual / Organization, etc.
+  status                     String?
+  firstName                  String?
+  middleName                 String?
+  lastName                   String?
+  fullName                   String?
+  informalName               String?
+  formalName                 String?
+  recognitionName            String?
+  sortName                   String?
+  prefix                     String?
+  suffix                     String?
+  birthdate                  DateTime?
+  gender                     Gender?
+  jobTitle                   String?
+  employer                   String?
+  website                    String?
+  facebookId                 String?
+  twitterId                  String?
+  linkedInId                 String?
+  envelopeName               String?
+
+  // Preferences
+  communicationChannelPreferred String?
+  emailInterestIsActive       Boolean? // high-level flag
+  lastModifiedDate            DateTime?
+  lastModifiedName            String?
+  createdDate                 DateTime? @default(now())
+  createdName                 String?
+
+  // Relations
+  donor         Donor?
+  emails        Email[]
+  phones        Phone[]
+  addresses     Address[]
+  households    HouseholdMember[]
+  donations     Donation[]
+  pledges       Pledge[]
+  recurring     RecurringDonation[]
+  interactions  Interaction[]
+  softCredits   SoftCredit[]
+  files         FileAttachment[]
+  refunds       Refund[]
+  tasks         Task[]
+  notes         Note[]
+  wallets       WalletItem[]
+  tributesMade  Tribute[]        @relation("TributesByConstituent")
+  tributeHonors TributeHonor[]   // who is honored/memorialized
+  emailInterests EmailInterest[]
 }
 
+/* Household rollup (head & members, names, etc.) */
+model Household {
+  id               String   @id @default(uuid())
+  accountNumber    String   @unique
+  name             String?
+  fullName         String?
+  informalName     String?
+  formalName       String?
+  envelopeName     String?
+  recognitionName  String?
+  sortName         String?
+  status           String?
+  headId           String?  // optional pointer to a member
+  createdAt        DateTime @default(now())
 
-model EmailInterest {
-  id       String  @id @default(uuid()) // UUID as primary key
-  name     String
-  isActive Boolean
+  members HouseholdMember[]
 }
 
+model HouseholdMember {
+  id            String      @id @default(uuid())
+  householdId   String
+  constituentId String
+  role          String?     // Head/Spouse/Child/etc.
 
-model RecurringDonationPayment {
-  id                        Int      @id 
-  fundName                 String
-  designationNumber        Int
-  createdName              String
-  createdDate              DateTime
-  amount                   Int
-  acknowledgementStatus    Boolean
-  lastModifiedDate         DateTime
-  lastModifiedName         String
-  referenceDesignationNumber Int
-  transactionNumber        Int
-  nonDeductible            Int
-  note                     String
+  household   Household   @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  constituent Constituent @relation(fields: [constituentId], references: [id], onDelete: Cascade)
+
+  @@unique([householdId, constituentId])
+  @@index([constituentId])
 }
 
+/* Contact Methods */
+model Email {
+  id            String    @id @default(uuid())
+  constituentId String
+  type          EmailType?
+  value         String
+  isPrimary     Boolean?  @default(false)
+  isBad         Boolean?  @default(false)
+  createdName   String?
+  lastModifiedName String?
+  createdAt     DateTime  @default(now())
 
+  constituent Constituent @relation(fields: [constituentId], references: [id], onDelete: Cascade)
+  @@index([constituentId])
+}
 
 model Phone {
-  accountNumber String    @id @default(uuid())// AccountNumber: String
-  number        String    // Number: String
-  isPrimary     Boolean   // IsPrimary: Boolean
-  typeName      String // TypeName: Enum
+  id            String    @id @default(uuid())
+  constituentId String
+  type          PhoneType?
+  number        String
+  extension     String?
+  isPrimary     Boolean? @default(false)
+
+  constituent Constituent @relation(fields: [constituentId], references: [id], onDelete: Cascade)
+  @@index([constituentId])
 }
 
+model Address {
+  id            String      @id @default(uuid())
+  constituentId String
+  type          AddressType?
+  street        String?
+  city          String?
+  state         String?
+  postalCode    String?
+  county        String?
+  country       String?
+  isPrimary     Boolean? @default(false)
+  isBad         Boolean? @default(false)
+
+  constituent Constituent @relation(fields: [constituentId], references: [id], onDelete: Cascade)
+  @@index([constituentId])
+}
+
+/* =========================
+   Fundraising: Catalog
+   ========================= */
+
+model Campaign {
+  id        String    @id @default(uuid())
+  name      String
+  goal      String?
+  startDate DateTime?
+  endDate   DateTime?
+  isActive  Boolean?  @default(true)
+
+  appeals   Appeal[]
+  donations Donation[]
+}
+
+
+model Appeal {
+  id         String    @id @default(uuid())
+  campaignId String
+  name       String
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  donations Donation[]
+  @@index([campaignId])
+}
+
+
+
+model Designation {
+  id        String  @id @default(uuid())
+  number    Int     @unique
+  name      String?
+
+  donations Donation[]
+  recurringDonations RecurringDonation[]
+}
+
+/* =========================
+   Transactions & Payments
+   ========================= */
+
+model Donation {
+  id             String     @id @default(uuid())
+  transactionNumber Int?     @unique
+  amount         Float
+  nonDeductible  Int?        // in cents
+  method         DonationMethod?
+  inKindType     String?
+  inKindDescription String?
+  inKindMarketValue Int?
+  checkDate      DateTime?
+  checkNumber    String?
+  date           DateTime?   // Transaction date
+
+  // foreign keys
+  campaignId     String?
+  appealId       String?
+  fundId         String?
+  designationId  String?
+  donorId        String
+  interactionLinkId String?  // optional link to interaction
+  tributeId       String?     // link to tribute, if any
+  processorAccountId String?
+  constituentId  String
+
+
+  acknowledgmentStatus Boolean? // acked/thank-you sent
+  createdDate     DateTime   @default(now())
+  createdName     String?
+  lastModifiedDate DateTime?
+  lastModifiedName String?
+  note            String?
+
+  isCompanyMatch  Boolean?    @default(false)
+
+  // Processor references
+  paymentToken       String?
+
+  // Relations
+  constituent Constituent @relation(fields: [constituentId], references: [id], onDelete: Cascade)
+  campaign    Campaign?   @relation(fields: [campaignId], references: [id])
+  appeal      Appeal?     @relation(fields: [appealId], references: [id])
+  fund        Fund?       @relation(fields: [fundId], references: [id])
+  designation Designation?@relation(fields: [designationId], references: [id])
+  tribute     Tribute?    @relation(fields: [tributeId], references: [id])
+  donor        Donor       @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  interaction Interaction? @relation("InteractionDonations", fields: [interactionLinkId], references: [id])
+
+  softCredits SoftCredit[]
+  files       FileAttachment[]
+  refunds     Refund[]
+  processing  ProcessingInfo?
+  pledgePayments PledgePayment[]
+  recurringPayments RecurringDonationPayment[]
+
+  @@index([constituentId])
+  @@index([campaignId, appealId, fundId, designationId])
+}
 
 model ProcessingInfo {
-  token                           String  // Token: String
-  amount                          Int     // Amount: Int
-  transactionNumber               Int     // TransactionNumber: Int
-  transactionProcessorAccountNumber Int  // TransactionProcessorAccountNumber: Int
-  uuid                           String  @id @default(uuid()) // UUID: String
+  id                 String  @id @default(uuid())
+  donationId         String  @unique
+  token              String?
+  amount             Int?
+  transactionNumber  Int?
+  transactionProcessorAccountNumber Int?
+
+  donation Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
 }
+
+model Refund {
+  id             String   @id @default(uuid())
+  
+  amount         Int
+  date           DateTime?
+  createdDate    DateTime @default(now())
+  createdName    String?
+  lastModifiedDate DateTime?
+  lastModifiedName String?
+  note           String?
+
+  donationId     String
+  constituentId  String
+  
+  constituent Constituent @relation(fields: [constituentId], references: [id], onDelete: Cascade)
+  donation Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  @@index([donationId])
+  @@index([constituentId])
+}
+
+/* Pledges & payments */
+model Pledge {
+  id             String   @id @default(uuid())
+  constituentId  String
+  fundId         String?
+  amount         Int
+  frequency      Frequency
+  firstInstallmentDate DateTime
+  createdDate    DateTime @default(now())
+  createdName    String?
+  lastModifiedDate DateTime?
+  lastModifiedName String?
+  acknowledgmentStatus Boolean?
+  note           String?
+
+  constituent Constituent @relation(fields: [constituentId], references: [id], onDelete: Cascade)
+  fund        Fund?       @relation(fields: [fundId], references: [id])
+  payments    PledgePayment[]
+
+  @@index([constituentId])
+}
+
+model PledgePayment {
+  id               String   @id @default(uuid())
+  pledgeId         String
+  donationId       String?  // if a payment resulted in a Donation entry
+  transactionNumber Int?
+  amount           Int
+  createdDate      DateTime @default(now())
+  createdName      String?
+  lastModifiedDate DateTime?
+  lastModifiedName String?
+  nonDeductible    Int?
+  referenceDesignationNumber Int?
+  acknowledgmentStatus Boolean?
+  checkDate        DateTime?
+  checkNumber      String?
+  note             String?
+
+  pledge   Pledge   @relation(fields: [pledgeId], references: [id], onDelete: Cascade)
+  donation Donation?@relation(fields: [donationId], references: [id])
+
+  @@index([pledgeId])
+  @@index([donationId])
+}
+
+/* Recurring gifts & payments */
+model RecurringDonation {
+  id               String    @id @default(uuid())
+  constituentId    String
+  fundId           String?
+  designationId    String?
+  amount           Int
+  frequency        Frequency
+  startDate        DateTime?
+  endDate          DateTime?
+  note             String?
+  createdDate      DateTime @default(now())
+  createdName      String?
+  lastModifiedDate DateTime?
+  lastModifiedName String?
+  acknowledgmentStatus Boolean?
+
+  constituent Constituent @relation(fields: [constituentId], references: [id], onDelete: Cascade)
+  fund        Fund?       @relation(fields: [fundId], references: [id])
+  designation Designation?@relation(fields: [designationId], references: [id])
+  payments    RecurringDonationPayment[]
+
+  @@index([constituentId])
+}
+
+model RecurringDonationPayment {
+  id               String   @id @default(uuid())
+  recurringId      String
+  donationId       String?  // may map to a Donation
+  transactionNumber Int?
+  amount           Int
+  createdDate      DateTime @default(now())
+  createdName      String?
+  lastModifiedDate DateTime?
+  lastModifiedName String?
+  nonDeductible    Int?
+  referenceDesignationNumber Int?
+  acknowledgmentStatus Boolean?
+  note             String?
+
+  recurring RecurringDonation @relation(fields: [recurringId], references: [id], onDelete: Cascade)
+  donation  Donation?         @relation(fields: [donationId], references: [id])
+
+  @@index([recurringId])
+  @@index([donationId])
+}
+
+/* Relationships between constituents */
+model Relationship {
+  id               String   @id @default(uuid())
+  accountNumber1   String   // First constituent
+  accountNumber2   String   // Second constituent
+  role1            String?  // Role of constituent 1
+  role2            String?  // Role of constituent 2
+  relationshipRole String?  // General relationship descriptor
+  isActive         Boolean  @default(true)
+  note             String?
+  createdDate      DateTime @default(now())
+  createdName      String?
+  lastModifiedDate DateTime?
+  lastModifiedName String?
+
+  @@index([accountNumber1])
+  @@index([accountNumber2])
+}
+
+/* Soft credits */
+model SoftCredit {
+  id               String   @id @default(uuid())
+  donationId       String
+  interactionId    String?  // Can also be linked to interactions
+  creditedToId     String   // constituent receiving credit
+  amount           Int
+  designationNumber Int?
+  createdDate      DateTime @default(now())
+  createdName      String?
+  lastModifiedDate DateTime?
+  lastModifiedName String?
+  acknowledged     Boolean? @default(false)
+  reference        Int?
+  note             String?
+
+  donation   Donation   @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  creditedTo Constituent @relation(fields: [creditedToId], references: [id])
+
+  @@index([donationId])
+  @@index([creditedToId])
+}
+
+/* Files attached to donations/interactions/etc. */
+model FileAttachment {
+  id                  String   @id @default(uuid())
+  url                 String
+  name                String?
+  createdDateUtc      DateTime @default(now())
+  designationNumber   Int?
+  interactionId       String?
+  noteId              String?
+  taskId              String?
+  transactionNumber   Int?
+
+  constituentId       String?
+  donationId          String?
+  interactionLinkId   String?
+  taskLinkId          String?
+
+  donation    Donation?   @relation(fields: [donationId], references: [id])
+  interaction Interaction?@relation(fields: [interactionLinkId], references: [id])
+  task        Task?       @relation(fields: [taskLinkId], references: [id])
+  constituent Constituent? @relation(fields: [constituentId], references: [id])
+
+  @@index([donationId])
+  @@index([interactionLinkId])
+  @@index([taskLinkId])
+}
+
+/* =========================
+   Engagement / Interactions
+   ========================= */
 
 model Interaction {
-  id                  Int      @id @default(autoincrement()) // Id: Int
-  accountNum          Int      // Account Num: Int
-  note                String   // Note: String
-  purpose             String   // Purpose: String
-  transactions        Int      // Transactions: Int
-  inbound             Boolean  // Inbound: Boolean
-  subject             String   // Subject: String
-  channel             String   // Channel: String
-  reasonForInterest   String   // Reason for Interest: String
-  level               String   // Level: String
-  createdDate         DateTime // Created Date: DateTime
-  createdName         String   // Created Name: String
-  lastModifiedDate    DateTime // Last Modified Date: DateTime
-  lastModifiedName    String   // Last Modified Name: String
+  id                    String    @id @default(uuid())
+  constituentId         String
+  subject               String?
+  channel               String?  // phone/email/in-person/etc.
+  type                  EventType?
+  status                EventStatus?
+  date                  DateTime?
+  createdDate           DateTime  @default(now())
+  createdName           String?
+  lastModifiedDate      DateTime?
+  lastModifiedName      String?
+  purpose               String?
+  readinessForAsk       String?
+  reasonForInterest     String?
+  invitedBy             String?
+  askers                String?
+  askAmount             Int?
+  askByWhen             DateTime?
+  teamLeader            String?
+  tableCaptains         String?
+  levelsOfInterest      String?
+  inbound               Boolean?
+  note                  String?
+
+  constituent Constituent @relation(fields: [constituentId], references: [id], onDelete: Cascade)
+  ambassadors Ambassadors[]
+  buckets     Bucket[]
+  files       FileAttachment[]
+  transactions Donation[] @relation("InteractionDonations") // optional if linking
+
+  @@index([constituentId])
 }
 
+model Ambassadors {
+  id        String   @id @default(uuid())
+  name      String
+  interactionId String
+  interaction Interaction @relation(fields: [interactionId], references: [id], onDelete: Cascade)
+  
+  @@index([interactionId])
+}
 
+model Bucket {
+  id            String   @id @default(uuid())
+  name          String
+  interactionId String
+  interaction   Interaction @relation(fields: [interactionId], references: [id], onDelete: Cascade)
+  
+  @@index([interactionId])
+}
+
+/* Notes attached to constituents or other entities */
+model Note {
+  id               String   @id @default(uuid())
+  constituentId    String?
+  note             String
+  createdDate      DateTime @default(now())
+  createdName      String?
+  
+  constituent Constituent? @relation(fields: [constituentId], references: [id], onDelete: Cascade)
+  
+  @@index([constituentId])
+}
+
+/* Tasks (lightweight CRM tasks) */
+model Task {
+  id               String   @id @default(uuid())
+  constituentId    String?
+  name             String
+  notes            String?
+  note             String?
+  shouldApplySoftCredit Boolean? @default(false)
+  status           Boolean? // completed status
+  eventStatus      String?  // status descriptor
+  eventType        String?
+  purpose          String?
+  subject          String?
+  ambassador       String?
+  askers           String?
+  askAmount        Int?
+  buckets          String?
+  channel          String?
+  invitedBy        String?
+  levelsOfInterest String?
+  readinessForAsk  String?
+  teamLeader       String?
+  tableCaptains    String?
+  isActive         Boolean? @default(true)
+  userName         String?
+  createdDate      DateTime @default(now())
+  createdName      String?
+  lastModifiedDate DateTime?
+  lastModifiedName String?
+  completedDate    DateTime?
+  date             DateTime?
+
+  constituent Constituent? @relation(fields: [constituentId], references: [id])
+  files       FileAttachment[]
+  
+  @@index([constituentId])
+}
+
+/* Tributes (honor/memorial) + who is notified */
+model Tribute {
+  id          String   @id @default(uuid())
+  name        String
+  type        String?   // honor/memory/etc.
+  note        String?
+  isActive    Boolean?  @default(true)
+  notificants Int?      // count if you track
+  donations   Donation[]
+  honors      TributeHonor[]
+
+  constituentId String
+  constituent   Constituent @relation("TributesByConstituent", fields: [constituentId], references: [id], onDelete: Cascade)
+
+}
+
+model TributeHonor {
+  id          String   @id @default(uuid())
+  tributeId   String
+  constituentId String
+  note        String?
+
+  tribute     Tribute     @relation(fields: [tributeId], references: [id], onDelete: Cascade)
+  constituent Constituent @relation(fields: [constituentId], references: [id])
+
+  @@index([tributeId])
+  @@index([constituentId])
+}
+
+/* Wallet items (stored card/ach metadata, tokenized) */
+model WalletItem {
+  id                    String   @id @default(uuid())
+  constituentId         String
+  designationNumber     Int?
+  creditCardType        String?
+  creditCardNumberMasked String?
+  creditCardExpiration  DateTime?
+  eftAccountType        String?
+  eftAccountNumberMasked String?
+  eftRoutingNumberMasked String?
+  paymentMethodToken    String?
+
+  constituent Constituent @relation(fields: [constituentId], references: [id], onDelete: Cascade)
+  @@index([constituentId])
+}
+
+/* Processor accounts */
+model TransactionProcessorAccount {
+  id           String   @id @default(uuid())
+  name         String
+  isActive     Boolean  @default(true)
+  stripeAccountId String?
+  appliesTo    String?  // freeform or enum
+  categoryName String?
+  dataType     String?
+  type         String?
+}
+
+/* =========================
+   Email Interest (opt-ins)
+   ========================= */
+
+model EmailInterest {
+  id            String   @id @default(uuid())
+  constituentId String
+  name          String
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  constituent Constituent @relation(fields: [constituentId], references: [id], onDelete: Cascade)
+  @@index([constituentId])
+}
+
+/* =========================
+   Custom Attributes
+   ========================= */
+
+/* Field definitions configured in settings */
+model CustomField {
+  id           String    @id @default(uuid())
+  name         String
+  appliesTo    AppliesTo
+  dataType     DataType
+  isRequired   Boolean   @default(false)
+  isActive     Boolean   @default(true)
+  picklist     Json?     // list of allowed values if DataType = PICKLIST
+  helpText     String?
+
+  values       CustomValue[]
+  @@unique([name, appliesTo])
+}
+
+/* Polymorphic value store (entityType + entityId) */
+model CustomValue {
+  id         String     @id @default(uuid())
+  fieldId    String
+  entityType AppliesTo
+  entityId   String     // stores the target model's id as string (no FK across models)
+  // Store the value in one of these columns; use one per row depending on field.dataType
+  valueString String?
+  valueInt    Int?
+  valueFloat  Float?
+  valueBool   Boolean?
+  valueDate   DateTime?
+  valueJson   Json?
+
+  field    CustomField @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  @@index([entityType, entityId])
+  @@unique([fieldId, entityType, entityId]) // one value per entity per field
+}
