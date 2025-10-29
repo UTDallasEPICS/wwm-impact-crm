@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// Local type for runtime validation / typing
+//Local type for runtime validation and typing
 type ConstituentInput = {
     firstName: string;
     lastName?: string;
@@ -13,17 +13,17 @@ type ConstituentInput = {
     address?: string;
 };
 
-// Helpful util to access prisma model even if TS model name differs
+//Helpful util to access prisma model even if TS model name differs
 const db = prisma as any;
-const MODEL = "constituent"; // adjust if your Prisma model name is different (e.g. "Constituent")
+const MODEL = "constituent"; // adjust if Prisma model name is different
 
-// Basic async handler wrapper
+//Basic async handler wrapper
 const wrap =
     (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) =>
     (req: Request, res: Response, next: NextFunction) =>
         fn(req, res, next).catch(next);
 
-// GET / - list constituents, supports ?skip=&take=&search=
+//GET list constituents, supports ?skip=&take=&search=
 router.get(
     "/",
     wrap(async (req: Request, res: Response) => {
@@ -53,7 +53,7 @@ router.get(
     })
 );
 
-// GET /:id - fetch single constituent
+// GET id to fetch single constituent
 router.get(
     "/:id",
     wrap(async (req: Request, res: Response) => {
@@ -67,7 +67,7 @@ router.get(
     })
 );
 
-// POST / - create new constituent
+// POST to create new constituent
 router.post(
     "/",
     wrap(async (req: Request, res: Response) => {
@@ -91,7 +91,7 @@ router.post(
     })
 );
 
-// PUT /:id - update a constituent
+// PUT id to update a specificconstituent
 router.put(
     "/:id",
     wrap(async (req: Request, res: Response) => {
@@ -118,7 +118,7 @@ router.put(
     })
 );
 
-// DELETE /:id - remove a constituent
+// DELETE id to remove a constituent
 router.delete(
     "/:id",
     wrap(async (req: Request, res: Response) => {
