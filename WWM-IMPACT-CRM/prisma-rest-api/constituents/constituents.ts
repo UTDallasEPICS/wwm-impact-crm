@@ -15,7 +15,7 @@ type ConstituentInput = {
 
 //Helpful util to access prisma model even if TS model name differs
 const db = prisma as any;
-const MODEL = "constituent"; // adjust if Prisma model name is different
+const MODEL = "Constituents"; // adjust if Prisma model name is different
 
 //Basic async handler wrapper
 const wrap =
