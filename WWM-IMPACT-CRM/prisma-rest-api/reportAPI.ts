@@ -18,6 +18,24 @@ router.get('/reports', async (req, res) => {
   }
 });
 
+// GET /api/reports/:id - fetch a report by ID
+router.get('/reports/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const report = await prisma.report.findUnique({
+      where: { id },
+    }); 
+    if (report) {
+      res.json(report);
+    } else {
+      res.status(404).json({ error: 'Report not found' });
+    }
+  } catch (error: any) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch report' });
+  }
+});
+
 
 //create report
 router.post('/reports', async (req, res) => {
@@ -42,6 +60,8 @@ router.post('/reports', async (req, res) => {
     res.status(500).json({ error: error.message }); // Return actual error to Postman
   }
 });
+
+
 
 //update report
 router.put('/reports/:id', async (req, res) => {
@@ -70,6 +90,17 @@ router.delete('/reports/:id', async (req, res) => {
   } catch (error: any) {
   console.error(error);
   res.status(500).json({ error: error.message }); // now Postman sees the real error
+  }
+});
+
+//delete all reports
+router.delete('/reports', async (req, res) => {
+  try {
+    const deletedReports = await prisma.report.deleteMany();  
+    res.json({ count: deletedReports.count });
+  } catch (error: any) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to delete reports' });
   }
 });
 
