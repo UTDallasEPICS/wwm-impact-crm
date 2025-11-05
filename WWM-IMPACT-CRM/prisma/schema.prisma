@@ -8,40 +8,44 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id       String  @id @default(uuid())
-  email    String  @unique
-  username String?
-  password String?
-  role     Role    @default(STANDARD)
+model BloomerangUser {
+  id             String             @id @default(uuid())
+  email          String             @unique
+  username       String?
+  password       String?
+  role           Role               @default(STANDARD)
 
   // From diagram
-  accountNum        String   @unique // Account Num: String UUID
-  note              String?
-  purpose           String?
-  transactions      Int?
-  inbound           Boolean?
-  subject           String?
-  channel           String?
+  accountNum     String             @unique // Account Num: String UUID
+  note           String?
+  purpose        String?
+  transactions   Int?
+  inbound        Boolean?
+  subject        String?
+  channel        String?
   reasonForInterest String?
 
-  level            String?
-  createdDate      DateTime? // Created Date
-  createdName      String?
-  lastModifiedDate DateTime? // Last Modified Date
+  level          String?
+  createdDate    DateTime?          // Created Date
+  createdName    String?
+  lastModifiedDate DateTime?        // Last Modified Date
   lastModifiedName String?
-  askAmounts       Int?
+  askAmounts     Int?
 
   // Additional Fields
-  country       String?
-  isActive      Boolean?           @default(true)
-  language      String?
-  name          String?
-  phone         String?
-  sortName      String?
-  timeZone      String?
+  country        String?
+  isActive       Boolean?           @default(true)
+  language       String?
+  name           String?
+  phone          String?
+  sortName       String?
+  timeZone       String?
+  
   // Relations
-  organizations UserOrganization[]
+  organizations  BloomerangUserOrganization[]
+}
+
+model User {
   emailVerified Boolean            @default(false)
   image         String?
   createdAt     DateTime           @default(now())
@@ -61,7 +65,7 @@ model Organization {
   id   String @id @default(uuid())
   name String
 
-  users   UserOrganization[]
+  users   BloomerangUserOrganization[]
   donors  Donor[]
   funds   Fund[]
   reports Report[]
@@ -102,12 +106,12 @@ enum ReportType {
   CUSTOM
 }
 
-model UserOrganization {
+model BloomerangUserOrganization {
   id             String @id @default(uuid())
   userId         String
   organizationId String
 
-  user         User         @relation(fields: [userId], references: [id])
+  user         BloomerangUser         @relation(fields: [userId], references: [id])
   organization Organization @relation(fields: [organizationId], references: [id])
 
   @@unique([userId, organizationId])
