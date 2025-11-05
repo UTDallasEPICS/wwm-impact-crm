@@ -4,15 +4,13 @@ import prisma from '../../../lib/prisma'
 export default defineEventHandler(async (event) => {
   try {
     const id = getRouterParam(event, 'id')!
-    const designation = await prisma.designation.findUnique({ where: { id } })
-
-    if (!designation) {
+    const task = await prisma.task.findUnique({ where: { id } })
+    if (!task) {
       event.node.res.statusCode = 404
-      return { error: 'Designation not found' }
+      return { error: 'Task not found' }
     }
-
-    return { data: designation }
+    return { data: task }
   } catch (err) {
-    return { error: 'Failed to fetch designation', details: err }
+    return { error: 'Failed to fetch task', details: err }
   }
 })

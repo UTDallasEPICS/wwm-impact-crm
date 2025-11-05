@@ -4,15 +4,13 @@ import prisma from '../../../lib/prisma'
 export default defineEventHandler(async (event) => {
   try {
     const id = getRouterParam(event, 'id')!
-    const designation = await prisma.designation.findUnique({ where: { id } })
-
-    if (!designation) {
+    const item = await prisma.pledgePayment.findUnique({ where: { id } })
+    if (!item) {
       event.node.res.statusCode = 404
-      return { error: 'Designation not found' }
+      return { error: 'PledgePayment not found' }
     }
-
-    return { data: designation }
+    return { data: item }
   } catch (err) {
-    return { error: 'Failed to fetch designation', details: err }
+    return { error: 'Failed to fetch pledge payment', details: err }
   }
 })

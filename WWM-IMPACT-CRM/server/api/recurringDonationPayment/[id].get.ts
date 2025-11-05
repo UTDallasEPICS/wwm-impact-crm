@@ -4,15 +4,13 @@ import prisma from '../../../lib/prisma'
 export default defineEventHandler(async (event) => {
   try {
     const id = getRouterParam(event, 'id')!
-    const designation = await prisma.designation.findUnique({ where: { id } })
-
-    if (!designation) {
+    const item = await prisma.recurringDonationPayment.findUnique({ where: { id } })
+    if (!item) {
       event.node.res.statusCode = 404
-      return { error: 'Designation not found' }
+      return { error: 'RecurringDonationPayment not found' }
     }
-
-    return { data: designation }
+    return { data: item }
   } catch (err) {
-    return { error: 'Failed to fetch designation', details: err }
+    return { error: 'Failed to fetch recurring donation payment', details: err }
   }
 })
