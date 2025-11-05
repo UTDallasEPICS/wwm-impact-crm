@@ -24,7 +24,6 @@
             type="password"
             class="w-full px-3 py-2 border rounded-lg"
             placeholder="Enter your password"
-            required
           />
         </div>
         <button
@@ -34,15 +33,6 @@
           Login
         </button>
       </form>
-
-      <div class="mt-6 text-center text-sm text-gray-600">
-        <p>
-          Don't have an account?
-          <NuxtLink to="/signup" class="text-blue-500 hover:text-blue-600"
-            >Sign up here</NuxtLink
-          >
-        </p>
-      </div>
     </div>
   </div>
 </template>

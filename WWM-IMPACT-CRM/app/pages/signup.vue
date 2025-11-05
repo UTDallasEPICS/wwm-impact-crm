@@ -1,6 +1,7 @@
 <template>
   <div class="min-h-screen flex items-center justify-center">
     <div class="max-w-md w-full p-6 bg-white rounded-lg shadow-lg">
+      <h2 class="text-2xl font-bold mb-6 text-red-500">This page is not to be used.</h2>
       <h2 class="text-2xl font-bold mb-6">Create Account</h2>
 
       <!-- Success message (commented out for now) -->

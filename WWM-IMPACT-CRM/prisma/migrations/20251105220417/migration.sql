@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "user" (
+CREATE TABLE "BloomerangUser" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "email" TEXT NOT NULL,
     "username" TEXT,
@@ -25,11 +25,18 @@ CREATE TABLE "user" (
     "name" TEXT,
     "phone" TEXT,
     "sortName" TEXT,
-    "timeZone" TEXT,
+    "timeZone" TEXT
+);
+
+-- CreateTable
+CREATE TABLE "user" (
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
     "emailVerified" BOOLEAN NOT NULL DEFAULT false,
-    "image" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "image" TEXT
 );
 
 -- CreateTable
@@ -63,12 +70,12 @@ CREATE TABLE "Report" (
 );
 
 -- CreateTable
-CREATE TABLE "UserOrganization" (
+CREATE TABLE "BloomerangUserOrganization" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "userId" TEXT NOT NULL,
     "organizationId" TEXT NOT NULL,
-    CONSTRAINT "UserOrganization_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "UserOrganization_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "BloomerangUserOrganization_userId_fkey" FOREIGN KEY ("userId") REFERENCES "BloomerangUser" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "BloomerangUserOrganization_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -624,10 +631,10 @@ CREATE TABLE "verification" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
+CREATE UNIQUE INDEX "BloomerangUser_email_key" ON "BloomerangUser"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "user_accountNum_key" ON "user"("accountNum");
+CREATE UNIQUE INDEX "BloomerangUser_accountNum_key" ON "BloomerangUser"("accountNum");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Donor_constituentId_key" ON "Donor"("constituentId");
@@ -636,7 +643,7 @@ CREATE UNIQUE INDEX "Donor_constituentId_key" ON "Donor"("constituentId");
 CREATE UNIQUE INDEX "Donor_organizationId_email_key" ON "Donor"("organizationId", "email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "UserOrganization_userId_organizationId_key" ON "UserOrganization"("userId", "organizationId");
+CREATE UNIQUE INDEX "BloomerangUserOrganization_userId_organizationId_key" ON "BloomerangUserOrganization"("userId", "organizationId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Constituent_accountNumber_key" ON "Constituent"("accountNumber");
