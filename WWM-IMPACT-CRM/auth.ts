@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { magicLink } from "better-auth/plugins";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { PrismaClient } from "./node_modules/@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import nodemailer from "nodemailer";
 
 const prisma = new PrismaClient();
