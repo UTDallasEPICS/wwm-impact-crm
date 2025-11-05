@@ -5,11 +5,12 @@ import bodyParser from 'body-parser';
 import reportAPI from './reportAPI'; 
 import campaignAPI from './campaignAPI';
 import fundAPI from './fundAPI';
+import constituentsAPI from './constituentsAPI';
 
 
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT || 3000);
 
 //call report api
 app.use(bodyParser.json());
@@ -23,6 +24,9 @@ app.use('/api', campaignAPI);
 app.use(bodyParser.json());
 app.use('/api', fundAPI);
 
+//call constituents api
+app.use(bodyParser.json());
+app.use('/api', constituentsAPI);
 
 
 app.get('/', (req, res) => {
