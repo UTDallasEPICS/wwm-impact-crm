@@ -10,7 +10,7 @@ import constituentsAPI from './constituentsAPI';
 
 
 const app = express();
-const PORT = Number(process.env.PORT || 3000);
+const PORT = 3000;
 
 //call report api
 app.use(bodyParser.json());
@@ -24,10 +24,9 @@ app.use('/api', campaignAPI);
 app.use(bodyParser.json());
 app.use('/api', fundAPI);
 
-//call constituents api
+// constituents api mounting removed as part of revert
 app.use(bodyParser.json());
 app.use('/api', constituentsAPI);
-
 
 app.get('/', (req, res) => {
   res.send('API is working!');

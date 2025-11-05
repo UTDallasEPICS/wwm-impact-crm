@@ -2,9 +2,7 @@
   "name": "nuxt-app",
   "private": true,
   "scripts": {
-  "dev:api": "ts-node server.ts",
-  "prisma:generate": "prisma generate --schema=./prisma/schema.prisma",
-  "prisma:push": "prisma db push --schema=./prisma/schema.prisma"
+    "prisma:generate": "prisma generate --schema=../prisma/schema.prisma"
   },
   "dependencies": {
     "@nuxtjs/tailwindcss": "^6.14.0",
