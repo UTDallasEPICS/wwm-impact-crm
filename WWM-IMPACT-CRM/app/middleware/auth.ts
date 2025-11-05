@@ -4,8 +4,8 @@ import { UserRole, type User } from '../../types/user'
 export default defineNuxtRouteMiddleware((to) => {
   const user = useState<User | null>('user', () => null)
   
-  if (!user.value && to.path !== '/login') {
-    return navigateTo('/login')
+  if (!user.value && to.path !== '/') {
+    return navigateTo('/')
   }
 
   if (to.meta.requiredRole) {

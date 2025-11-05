@@ -16,7 +16,7 @@ model User {
   role           Role               @default(STANDARD)
 
   // From diagram
-  accountNum     String             @unique // Account Num: String UUID
+  accountNum     String?             @unique // Account Num: String UUID
   note           String?
   purpose        String?
   transactions   Int?
@@ -31,7 +31,7 @@ model User {
   lastModifiedDate DateTime?        // Last Modified Date
   lastModifiedName String?
   askAmounts     Int?
-
+  
   // Additional Fields
   country        String?
   isActive       Boolean?           @default(true)
