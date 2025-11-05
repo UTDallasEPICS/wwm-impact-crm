@@ -49,49 +49,29 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { authClient } from "../../auth-client";
 import { UserRole } from "../../types/user";
 import { useAuth } from "../../composables/useAuth";
 import { useRouter } from "vue-router";
 
 const email = ref("");
-const password = ref("");
-const auth = useAuth();
+// const password = ref("");
+//const auth = useAuth();
 
-const router = useRouter();
+//const router = useRouter();
 const handleLogin = async () => {
-  // Mock login: infer role from email (replace with real auth later)
-  const mockUser = {
-    id: "1",
-    role: email.value.includes("admin")
-      ? UserRole.ADMIN
-      : email.value.includes("org")
-      ? UserRole.ORGANIZATION_LEADER
-      : email.value.includes("donor")
-      ? UserRole.DONOR
-      : UserRole.BASIC_USER,
-    profile: {
-      firstName: "Test",
-      lastName: "User",
-      email: email.value,
-      dateJoined: new Date(),
-      lastLogin: new Date(),
-    },
-    permissions: {
-      canManageDonations:
-        email.value.includes("admin") || email.value.includes("org"),
-      canViewReports:
-        email.value.includes("admin") || email.value.includes("org"),
-      canManageUsers: email.value.includes("admin"),
-      canManageCampaigns:
-        email.value.includes("admin") || email.value.includes("org"),
-      canAccessAdminPanel: email.value.includes("admin"),
-    },
-    status: "active" as "active" | "inactive" | "suspended",
-    lastPasswordChange: new Date(),
-    twoFactorEnabled: false,
-  };
+  const { data, error } = await authClient.signIn.magicLink({
+    email: email.value,
+    callbackURL: "/",
+  })
 
-  auth.setUser(mockUser);
-  router.push("/");
+  if (error) {
+    console.error("Magic link error: ", error)
+    alert("There was an error sending your magic login link.")
+    return
+  }
+
+  alert("A magic login link has been sent to your email! If it's not visible in your inbox, check your junk/spam folder.")
 };
+
 </script>
