@@ -1,5 +1,3 @@
-
-
 <template>
   <div class="min-h-screen flex items-center justify-center">
     <div class="max-w-md w-full p-6 bg-white rounded-lg shadow-lg">
@@ -12,16 +10,20 @@
             v-model="email"
             type="email"
             class="w-full px-3 py-2 border rounded-lg"
+            placeholder="Enter your email"
             required
           />
         </div>
         <div class="mb-6">
-          <label class="block text-gray-700 mb-2" for="password">Password</label>
+          <label class="block text-gray-700 mb-2" for="password"
+            >Password</label
+          >
           <input
             id="password"
             v-model="password"
             type="password"
             class="w-full px-3 py-2 border rounded-lg"
+            placeholder="Enter your password"
             required
           />
         </div>
@@ -32,47 +34,64 @@
           Login
         </button>
       </form>
+
+      <div class="mt-6 text-center text-sm text-gray-600">
+        <p>
+          Don't have an account?
+          <NuxtLink to="/signup" class="text-blue-500 hover:text-blue-600"
+            >Sign up here</NuxtLink
+          >
+        </p>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { UserRole } from '../../types/user'
-import { useAuth } from '../../composables/useAuth'
-import { useRouter } from 'vue-router'
+import { ref } from "vue";
+import { UserRole } from "../../types/user";
+import { useAuth } from "../../composables/useAuth";
+import { useRouter } from "vue-router";
 
-const email = ref('')
-const password = ref('')
-const auth = useAuth()
+const email = ref("");
+const password = ref("");
+const auth = useAuth();
 
-const router = useRouter()
+const router = useRouter();
 const handleLogin = async () => {
   // Mock login: infer role from email (replace with real auth later)
   const mockUser = {
-    id: '1',
-    role: email.value.includes('admin') ? UserRole.ADMIN :
-          email.value.includes('org') ? UserRole.ORGANIZATION_LEADER :
-          UserRole.BASIC_USER,
+    id: "1",
+    role: email.value.includes("admin")
+      ? UserRole.ADMIN
+      : email.value.includes("org")
+      ? UserRole.ORGANIZATION_LEADER
+      : email.value.includes("donor")
+      ? UserRole.DONOR
+      : UserRole.BASIC_USER,
     profile: {
-      firstName: 'Test',
-      lastName: 'User',
+      firstName: "Test",
+      lastName: "User",
       email: email.value,
       dateJoined: new Date(),
-      lastLogin: new Date()
+      lastLogin: new Date(),
     },
     permissions: {
-      canViewReports: email.value.includes('admin') || email.value.includes('org'),
-      canManageUsers: email.value.includes('admin'),
-      canManageCampaigns: email.value.includes('admin') || email.value.includes('org'),
-      canAccessAdminPanel: email.value.includes('admin')
+      canManageDonations:
+        email.value.includes("admin") || email.value.includes("org"),
+      canViewReports:
+        email.value.includes("admin") || email.value.includes("org"),
+      canManageUsers: email.value.includes("admin"),
+      canManageCampaigns:
+        email.value.includes("admin") || email.value.includes("org"),
+      canAccessAdminPanel: email.value.includes("admin"),
     },
-    status: 'active' as 'active' | 'inactive' | 'suspended',
+    status: "active" as "active" | "inactive" | "suspended",
     lastPasswordChange: new Date(),
     twoFactorEnabled: false,
-  }
+  };
 
-  auth.setUser(mockUser)
-  router.push('/')
-}
+  auth.setUser(mockUser);
+  router.push("/");
+};
 </script>
