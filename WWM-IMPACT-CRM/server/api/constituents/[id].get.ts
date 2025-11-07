@@ -4,15 +4,13 @@ import prisma from '../../../lib/prisma'
 export default defineEventHandler(async (event) => {
   try {
     const id = getRouterParam(event, 'id')!
-    const phone = await prisma.phone.findUnique({ where: { id } })
-
-    if (!phone) {
+    const row = await prisma.constituent.findUnique({ where: { id } })
+    if (!row) {
       event.node.res.statusCode = 404
-      return { error: 'Phone not found' }
+      return { error: 'Constituent not found' }
     }
-
-    return { data: phone }
+    return { data: row }
   } catch (err) {
-    return { error: 'Failed to fetch phone', details: err }
+    return { error: 'Failed to fetch constituent', details: err }
   }
 })

@@ -196,6 +196,7 @@ enum AppliesTo {
   ADDRESS
   EMAIL
   PHONE
+  DONOR
 }
 
 /* =========================
@@ -822,6 +823,7 @@ model EmailInterest {
    ========================= */
 
 /* Field definitions configured in settings */
+/* To create the custom Fields */
 model CustomField {
   id           String    @id @default(uuid())
   name         String
@@ -837,6 +839,7 @@ model CustomField {
 }
 
 /* Polymorphic value store (entityType + entityId) */
+/* To add values to said fields*/
 model CustomValue {
   id         String     @id @default(uuid())
   fieldId    String

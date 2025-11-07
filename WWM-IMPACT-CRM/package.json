@@ -24,6 +24,8 @@
   },
   "devDependencies": {
     "@nuxt/types": "^2.18.1",
+    "patch-package": "^8.0.1",
+    "postinstall-postinstall": "^2.1.0",
     "prisma": "^6.16.3"
   }
 }
