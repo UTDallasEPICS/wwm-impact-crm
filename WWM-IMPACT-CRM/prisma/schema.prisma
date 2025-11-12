@@ -458,7 +458,6 @@ model ProcessingInfo {
 
 model Refund {
   id             String   @id @default(uuid())
-  
   amount         Int
   date           DateTime?
   createdDate    DateTime @default(now())
