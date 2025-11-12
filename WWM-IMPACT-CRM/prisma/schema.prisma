@@ -16,7 +16,7 @@ model User {
   role           Role               @default(STANDARD)
 
   // From diagram
-  accountNum     String             @unique // Account Num: String UUID
+  accountNum     String?             @unique // Account Num: String UUID
   note           String?
   purpose        String?
   transactions   Int?
@@ -31,7 +31,7 @@ model User {
   lastModifiedDate DateTime?        // Last Modified Date
   lastModifiedName String?
   askAmounts     Int?
-
+  
   // Additional Fields
   country        String?
   isActive       Boolean?           @default(true)
@@ -196,6 +196,7 @@ enum AppliesTo {
   ADDRESS
   EMAIL
   PHONE
+  DONOR
 }
 
 /* =========================
@@ -457,7 +458,6 @@ model ProcessingInfo {
 
 model Refund {
   id             String   @id @default(uuid())
-  
   amount         Int
   date           DateTime?
   createdDate    DateTime @default(now())
@@ -822,6 +822,7 @@ model EmailInterest {
    ========================= */
 
 /* Field definitions configured in settings */
+/* To create the custom Fields */
 model CustomField {
   id           String    @id @default(uuid())
   name         String
@@ -837,6 +838,7 @@ model CustomField {
 }
 
 /* Polymorphic value store (entityType + entityId) */
+/* To add values to said fields*/
 model CustomValue {
   id         String     @id @default(uuid())
   fieldId    String
