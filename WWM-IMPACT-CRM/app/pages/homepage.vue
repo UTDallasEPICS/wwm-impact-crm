@@ -5,12 +5,12 @@
     <h1 class="text-3xl font-bold mb-4">Welcome</h1>
 
     <div v-if="!auth.user">
-      <p>Please <NuxtLink to="/login">login</NuxtLink> to continue.</p>
+      <p>Please <NuxtLink to="/">login</NuxtLink> to continue.</p>
     </div>
 
     <div v-else>
-  <p class="mb-2">Logged in as: <strong>{{ user?.profile?.email }}</strong></p>
-  <p class="mb-4">Role: <strong>{{ user?.role }}</strong></p>
+  <p class="mb-2">Logged in as: <strong>{{ auth.user.value?.profile }}</strong></p>
+  <p class="mb-4">Role: <strong>{{ auth.user.value?.role }}</strong></p>
 
       <div v-if="auth.isAdmin">
         <h2 class="text-xl font-semibold">Admin Panel</h2>
@@ -37,12 +37,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useAuth } from '../../composables/useAuth'
 const logout = () => {
   const router = useRouter()
   router.push('/')
 }
 const auth = useAuth()
-const user = computed(() => auth.user.value)
+console.log('Current user:', auth.user.value)
+
 </script>
