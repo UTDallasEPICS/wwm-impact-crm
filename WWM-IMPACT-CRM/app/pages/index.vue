@@ -3,9 +3,9 @@
   <div class="p-6">
     <h1 class="text-3xl font-bold mb-4">Welcome</h1>
     
-    <div v-if="session.get().isPending"><p>Loading...</p></div>
+    <div v-if="isPending"><p>Loading...</p></div>
 
-    <div v-else-if="!session.get().data">
+    <div v-else-if="!data">
       <p>Please <NuxtLink to="/login" class="text-blue-500 underline">log in</NuxtLink> to continue.</p>
     </div>
 
@@ -43,7 +43,7 @@
 
         <div>
           <p class="mb-1">
-            Logged in as: <strong>{{ session.get().data?.user.email }}</strong>
+            Logged in as: <strong>{{ data?.user.email }}</strong>
           </p>
           <p>
             Role: <strong>{{ "Placeholder" }}</strong>
@@ -58,7 +58,7 @@
 import { authClient } from "../../auth-client";
 
 // Better Auth session hook
-const session = authClient.useSession
+const { data, isPending } = authClient.useSession.get()
 
 // Log out
 const handleLogout = async () => {
