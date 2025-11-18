@@ -56,6 +56,10 @@
 
 <script setup lang="ts">
 import { authClient } from "../../auth-client";
+import { useRouter } from "vue-router";
+
+// Vue router
+const router = useRouter()
 
 // Better Auth session hook
 const { data, isPending } = authClient.useSession.get()
@@ -63,6 +67,7 @@ const { data, isPending } = authClient.useSession.get()
 // Log out
 const handleLogout = async () => {
   await authClient.signOut()
+  await router.push("/login")
 }
 
 </script>
