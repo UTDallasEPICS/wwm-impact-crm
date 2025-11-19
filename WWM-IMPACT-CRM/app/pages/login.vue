@@ -37,7 +37,11 @@ import { authClient } from "../../auth-client";
 const email = ref("");
 
 // Better Auth session hook
-const session = authClient.useSession()
+const session = authClient.useSession();
+const data = computed(() => session.value.data);
+const isPending = computed(() => session.value.isPending);
+
+
 
 const handleLogin = async () => {
   const { data, error } = await authClient.signIn.magicLink({

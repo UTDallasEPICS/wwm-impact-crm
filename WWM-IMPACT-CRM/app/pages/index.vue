@@ -57,12 +57,8 @@ const router = useRouter()
 
 // Better Auth session hook
 const session = authClient.useSession()
-
-// Redirect to /login if not logged in
-if(!session) {
-  navigateTo("/login")
-}
-
+const data = computed(() => session.value.data);
+const isPending = computed(() => session.value.isPending);
 // Log out
 const handleLogout = async () => {
   await authClient.signOut()
