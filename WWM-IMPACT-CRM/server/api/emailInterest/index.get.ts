@@ -1,11 +1,9 @@
 import { defineEventHandler, getQuery, setResponseStatus } from 'h3'
-import { PrismaClient } from '@prisma/client'
-
-const fallbackPrisma = new PrismaClient()
+import prisma from '../../../lib/prisma'
 
 export default defineEventHandler(async (event) => {
   try {
-    const prismaAny: any = (event as any).context?.prisma ?? fallbackPrisma
+  const prismaAny: any = prisma
     const q = getQuery(event)
     const skip = q.skip ? Number(q.skip) : undefined
     const take = q.take ? Number(q.take) : undefined

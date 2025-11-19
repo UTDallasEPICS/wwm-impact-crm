@@ -1,11 +1,9 @@
 import { defineEventHandler, readBody, setResponseStatus } from 'h3'
-import { PrismaClient } from '@prisma/client'
-
-const fallbackPrisma = new PrismaClient()
+import prisma from '../../../lib/prisma'
 
 export default defineEventHandler(async (event) => {
   try {
-    const prismaAny: any = (event as any).context?.prisma ?? fallbackPrisma
+  // Use shared Prisma client
     const b = (await readBody(event)) || {}
 
     const required: string[] = ['donationId', 'creditedToId', 'amount']
@@ -22,7 +20,7 @@ export default defineEventHandler(async (event) => {
       return { error: 'amount must be a number' }
     }
 
-    const created = await prismaAny.softCredit.create({
+  const created = await prisma.softCredit.create({
       data: {
         donationId: String(b.donationId),
         creditedToId: String(b.creditedToId),

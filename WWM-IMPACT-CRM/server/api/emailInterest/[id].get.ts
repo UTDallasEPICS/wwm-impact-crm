@@ -1,11 +1,9 @@
 import { defineEventHandler, getRouterParam, setResponseStatus } from 'h3'
-import { PrismaClient } from '@prisma/client'
-
-const fallbackPrisma = new PrismaClient()
+import prisma from '../../../lib/prisma'
 
 export default defineEventHandler(async (event) => {
   try {
-    const prismaAny: any = (event as any).context?.prisma ?? fallbackPrisma
+  const prismaAny: any = prisma
     const id = getRouterParam(event, 'id')
     if (!id) {
       setResponseStatus(event, 400)

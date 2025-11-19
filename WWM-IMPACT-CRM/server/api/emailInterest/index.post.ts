@@ -1,11 +1,9 @@
 import { defineEventHandler, readBody, setResponseStatus } from 'h3'
-import { PrismaClient } from '@prisma/client'
-
-const fallbackPrisma = new PrismaClient()
+import prisma from '../../../lib/prisma'
 
 export default defineEventHandler(async (event) => {
   try {
-    const prismaAny: any = (event as any).context?.prisma ?? fallbackPrisma
+  const prismaAny: any = prisma
     const b = (await readBody(event)) || {}
 
     const name = b.name?.trim?.()

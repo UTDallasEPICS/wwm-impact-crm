@@ -1,11 +1,9 @@
 import { defineEventHandler, getQuery, setResponseStatus } from 'h3'
-import { PrismaClient } from '@prisma/client'
-
-const fallbackPrisma = new PrismaClient()
+import prisma from '../../../lib/prisma'
 
 export default defineEventHandler(async (event) => {
   try {
-    const prismaAny: any = (event as any).context?.prisma ?? fallbackPrisma
+  // Use shared Prisma client
     const q = getQuery(event)
 
     const skip = q.skip ? Number(q.skip) : undefined
@@ -45,7 +43,7 @@ export default defineEventHandler(async (event) => {
       ]
     }
 
-    const data = await prismaAny.softCredit.findMany({
+  const data = await prisma.softCredit.findMany({
       where: Object.keys(where).length ? where : undefined,
       skip,
       take,

@@ -1,18 +1,16 @@
 import { defineEventHandler, getRouterParam, setResponseStatus } from 'h3'
-import { PrismaClient } from '@prisma/client'
-
-const fallbackPrisma = new PrismaClient()
+import prisma from '../../../lib/prisma'
 
 export default defineEventHandler(async (event) => {
   try {
-    const prismaAny: any = (event as any).context?.prisma ?? fallbackPrisma
+  // Use shared Prisma client
     const id = getRouterParam(event, 'id')
     if (!id) {
       setResponseStatus(event, 400)
       return { error: 'id param is required' }
     }
 
-    const data = await prismaAny.softCredit.findUnique({ where: { id } })
+  const data = await prisma.softCredit.findUnique({ where: { id } })
     if (!data) {
       setResponseStatus(event, 404)
       return { error: 'Not found' }

@@ -1,11 +1,9 @@
 import { defineEventHandler, getRouterParam, readBody, setResponseStatus } from 'h3'
-import { PrismaClient } from '@prisma/client'
-
-const fallbackPrisma = new PrismaClient()
+import prisma from '../../../lib/prisma'
 
 export default defineEventHandler(async (event) => {
   try {
-    const prismaAny: any = (event as any).context?.prisma ?? fallbackPrisma
+  // Use shared Prisma client
     const id = getRouterParam(event, 'id')
     if (!id) {
       setResponseStatus(event, 400)
@@ -42,7 +40,7 @@ export default defineEventHandler(async (event) => {
       return { error: 'No updatable fields provided' }
     }
 
-    const updated = await prismaAny.softCredit.update({ where: { id }, data })
+  const updated = await prisma.softCredit.update({ where: { id }, data })
     return { data: updated }
   } catch (e: any) {
     console.error('SoftCredits [id].patch error:', e)
