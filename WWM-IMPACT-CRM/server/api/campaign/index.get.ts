@@ -3,7 +3,7 @@ import { createError, defineEventHandler } from 'h3'
 
 export default defineEventHandler(async () => {
   try {
-    const campaigns = await prisma.fund.findMany()
+    const campaigns = await prisma.campaign.findMany()
     return campaigns
   }
     catch (error: any) {
