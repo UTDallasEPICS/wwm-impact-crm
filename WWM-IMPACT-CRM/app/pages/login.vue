@@ -1,8 +1,6 @@
 <template>
   <div class="min-h-screen flex items-center justify-center">
-    <div v-if="isPending"><p>Loading...</p></div>
-    
-    <div v-else-if="!data" class="max-w-md w-full p-6 bg-white rounded-lg shadow-lg">
+    <div v-if="!session" class="max-w-md w-full p-6 bg-white rounded-lg shadow-lg">
       <h2 class="text-2xl font-bold mb-6">Login</h2>
       <form @submit.prevent="handleLogin">
         <div class="mb-4">
@@ -27,7 +25,7 @@
     </div>
     
     <div v-else>
-      <p>You are already logged in as {{ data?.user.email }}.</p>
+      <p>You are already logged in as {{ session.data?.user.email }}.</p>
     </div>
   </div>
 </template>
@@ -39,7 +37,7 @@ import { authClient } from "../../auth-client";
 const email = ref("");
 
 // Better Auth session hook
-const { data, isPending } = authClient.useSession.get()
+const session = authClient.useSession()
 
 const handleLogin = async () => {
   const { data, error } = await authClient.signIn.magicLink({

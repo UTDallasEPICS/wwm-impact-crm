@@ -3,13 +3,7 @@
   <div class="p-6">
     <h1 class="text-3xl font-bold mb-4">Welcome</h1>
     
-    <div v-if="isPending"><p>Loading...</p></div>
-
-    <div v-else-if="!data">
-      <p>Please <NuxtLink to="/login" class="text-blue-500 underline">log in</NuxtLink> to continue.</p>
-    </div>
-
-    <div v-else>
+    <div>
       <!--
       <div v-if="auth.isAdmin">
         <h2 class="text-xl font-semibold">Admin Panel</h2>
@@ -43,7 +37,7 @@
 
         <div>
           <p class="mb-1">
-            Logged in as: <strong>{{ data?.user.email }}</strong>
+            Logged in as: <strong>{{ session.data?.user.email }}</strong>
           </p>
           <p>
             Role: <strong>{{ "Placeholder" }}</strong>
@@ -62,12 +56,17 @@ import { useRouter } from "vue-router";
 const router = useRouter()
 
 // Better Auth session hook
-const { data, isPending } = authClient.useSession.get()
+const session = authClient.useSession()
+
+// Redirect to /login if not logged in
+if(!session) {
+  navigateTo("/login")
+}
 
 // Log out
 const handleLogout = async () => {
   await authClient.signOut()
-  await router.push("/login")
+  navigateTo("/login")
 }
 
 </script>
