@@ -1,6 +1,7 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center">
-    <div v-if="!session" class="max-w-md w-full p-6 bg-white rounded-lg shadow-lg">
+  <div v-if="isPending" class="min-h-screen flex items-center justify-center"><p>Loading...</p></div>
+  <div v-else class="min-h-screen flex items-center justify-center">
+    <div v-if="!data?.session" class="max-w-md w-full p-6 bg-white rounded-lg shadow-lg">
       <h2 class="text-2xl font-bold mb-6">Login</h2>
       <form @submit.prevent="handleLogin">
         <div class="mb-4">
@@ -25,7 +26,7 @@
     </div>
     
     <div v-else>
-      <p>You are already logged in as {{ session.data?.user.email }}.</p>
+      <p>You are already logged in as <strong>{{ data.user.email }}</strong>.</p>
     </div>
   </div>
 </template>
@@ -41,10 +42,8 @@ const session = authClient.useSession();
 const data = computed(() => session.value.data);
 const isPending = computed(() => session.value.isPending);
 
-
-
 const handleLogin = async () => {
-  const { data, error } = await authClient.signIn.magicLink({
+  const { error } = await authClient.signIn.magicLink({
     email: email.value,
     callbackURL: "/",
   })

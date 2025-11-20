@@ -1,8 +1,7 @@
 <template>
-  
-  <div class="p-6">
+  <div v-if="isPending" class="min-h-screen flex items-center justify-center"><p>Loading...</p></div>
+  <div v-else class="p-6">
     <h1 class="text-3xl font-bold mb-4">Welcome</h1>
-    
     <div>
       <!--
       <div v-if="auth.isAdmin">
@@ -26,8 +25,17 @@
       </div>
       -->
 
+      <div v-if="!data?.session">
+        <button
+          @click="navigateTo('/login')"
+          class="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Log In
+        </button>
+      </div>
+      
       <!-- Bottom left section with logout button and user info side by side -->
-      <div class="mt-6 flex items-center gap-4">
+      <div v-else class="mt-6 flex items-center gap-4">
         <button
           @click="handleLogout"
           class="bg-red-500 text-white px-4 py-2 rounded"
@@ -37,7 +45,7 @@
 
         <div>
           <p class="mb-1">
-            Logged in as: <strong>{{ session.data?.user.email }}</strong>
+            Logged in as: <strong>{{ data?.user.email }}</strong>
           </p>
           <p>
             Role: <strong>{{ "Placeholder" }}</strong>
@@ -50,15 +58,12 @@
 
 <script setup lang="ts">
 import { authClient } from "../../auth-client";
-import { useRouter } from "vue-router";
-
-// Vue router
-const router = useRouter()
 
 // Better Auth session hook
 const session = authClient.useSession()
 const data = computed(() => session.value.data);
 const isPending = computed(() => session.value.isPending);
+
 // Log out
 const handleLogout = async () => {
   await authClient.signOut()
