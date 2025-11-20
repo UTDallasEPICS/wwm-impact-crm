@@ -1,5 +1,15 @@
 <template>
   <div v-if="isPending" class="min-h-screen flex items-center justify-center"><p>Loading...</p></div>
+  
+  <div v-else-if="!data?.session" class="min-h-screen flex items-center justify-center">
+    <button
+      @click="navigateTo('/login')"
+      class="bg-blue-500 text-white px-4 py-2 rounded"
+    >
+      Log In
+    </button>
+  </div>
+  
   <div v-else class="p-6">
     <h1 class="text-3xl font-bold mb-4">Welcome</h1>
     <div>
@@ -24,18 +34,11 @@
         <p>View public information and your profile.</p>
       </div>
       -->
-
-      <div v-if="!data?.session">
-        <button
-          @click="navigateTo('/login')"
-          class="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Log In
-        </button>
-      </div>
       
+      <div><pre>{{ session }}</pre></div>
+
       <!-- Bottom left section with logout button and user info side by side -->
-      <div v-else class="mt-6 flex items-center gap-4">
+      <div class="mt-6 flex items-center gap-4">
         <button
           @click="handleLogout"
           class="bg-red-500 text-white px-4 py-2 rounded"
