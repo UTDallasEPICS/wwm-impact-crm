@@ -1,4 +1,4 @@
-import prisma from '../../utils/prisma'
+import prisma from '../../../lib/prisma'
 import { defineEventHandler, createError, getRouterParam } from 'h3'
 
 export default defineEventHandler(async (event) => {

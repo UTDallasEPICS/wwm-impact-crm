@@ -1,6 +1,5 @@
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -588,7 +587,7 @@ model Relationship {
 }
 
 /* Soft credits */
-model SoftCredit {
+model SoftCredit { //  example a company matches an employee donation
   id               String   @id @default(uuid())
   donationId       String
   interactionId    String?  // Can also be linked to interactions
