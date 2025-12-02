@@ -16,16 +16,19 @@
     "@prisma/nuxt": "^0.3.0",
     "@vue/runtime-core": "^3.5.22",
     "@vue/runtime-dom": "^3.5.22",
+    "better-auth": "^1.3.34",
+    "nodemailer": "^7.0.10",
     "nuxt": "^4.1.2",
     "nuxt-auth-utils": "^0.5.25",
     "vue": "^3.5.22",
     "vue-router": "^4.5.1",
     "zod": "^4.1.12"
+    "vue": "^3.5.24",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
     "@nuxt/types": "^2.18.1",
-    "patch-package": "^8.0.1",
-    "postinstall-postinstall": "^2.1.0",
-    "prisma": "^6.16.3"
+    "@types/nodemailer": "^7.0.4",
+    "prisma": "^6.18.0"
   }
 }
