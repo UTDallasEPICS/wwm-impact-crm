@@ -6,7 +6,7 @@ Impact CRM is designed to replace WalkWithMe Global's current CRM (Bloomerang) b
 
 ---
 
-## 📘 Conceptual Overview
+##  Conceptual Overview
 
 WalkWithMe Global currently uses Bloomerang, a commercial nonprofit CRM platform. While powerful, Bloomerang presents several issues:
 
@@ -23,7 +23,7 @@ Impact CRM solves these problems by delivering a fully custom, open-source CRM t
 
 ---
 
-## 👥 User Roles
+##  User Roles
 
 ### 1. Admin
 
@@ -47,7 +47,7 @@ Impact CRM solves these problems by delivering a fully custom, open-source CRM t
 
 ---
 
-## 📌 Functional Requirements (by page/module)
+##  Functional Requirements (by page/module)
 
 ### Dashboard
 
@@ -114,7 +114,7 @@ Used for:
 
 ---
 
-## 🧰 Tech Stack
+##  Tech Stack
 
 ### Framework
 
@@ -135,19 +135,16 @@ Small, file-based database for local work.
 
 - **Postman** – API testing
 - **npm / npx** – package management & script execution
-- **Docker (future)** – planned for production deployment
 
 ---
 
-## 🚀 Deployment Notes
+##  Deployment Notes
 
 The system is **not deployed yet** and is currently running locally only.
 
 ### Long-term plan:
 
-- Deploy on **AWS** or **Azure**
-- Use a managed SQL database
-- Use containers (**Docker / ECS**) for backend hosting
+- Deploy on **Azure**
 - Integrate **CI/CD** for schema migrations
 
 ---
@@ -164,7 +161,7 @@ No migration scripts from Bloomerang have been implemented yet.
 
 ---
 
-## 🧑‍💻 Development Environment Setup
+##  Development Environment Setup
 
 > **Assumption:** Node.js, npm, and dependencies like Docker are already installed.
 
@@ -245,21 +242,3 @@ Impact CRM currently uses **Better Auth**.
 4. Restart the dev server
 5. Test login/logout
 6. Ensure roles seed correctly (or set them manually in DB)
-
----
-
-## 📝 License
-
-This project is open-source and available under the [MIT License](LICENSE).
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request.
-
----
-
-## 📧 Contact
-
-For questions or support, contact: **your-email@example.com**
