@@ -5,7 +5,7 @@ CREATE TABLE "BloomerangUser" (
     "username" TEXT,
     "password" TEXT,
     "role" TEXT NOT NULL DEFAULT 'STANDARD',
-    "accountNum" TEXT NOT NULL,
+    "accountNum" TEXT,
     "note" TEXT,
     "purpose" TEXT,
     "transactions" INTEGER,
