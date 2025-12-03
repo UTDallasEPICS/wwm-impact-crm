@@ -35,7 +35,10 @@
       </div>
       -->
       
-      <div><pre>{{ session }}</pre></div>
+      <details>
+        <summary>Session Information (For Development)</summary>
+        <pre>{{ session }}</pre>
+      </details>
 
       <!-- Bottom left section with logout button and user info side by side -->
       <div class="mt-6 flex items-center gap-4">
