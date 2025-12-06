@@ -226,19 +226,3 @@ npx prisma studio
 ```
 
 ---
-
-## 🛠️ Setting Up Authentication
-
-Impact CRM currently uses **Better Auth**.
-
-### Steps:
-
-1. Create a project in Better Auth
-2. Grab your:
-   - client ID
-   - secret
-   - callback URL
-3. Add them to `.env`
-4. Restart the dev server
-5. Test login/logout
-6. Ensure roles seed correctly (or set them manually in DB)
