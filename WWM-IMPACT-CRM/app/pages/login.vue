@@ -45,7 +45,7 @@ const isPending = computed(() => session.value.isPending);
 const handleLogin = async () => {
   const { error } = await authClient.signIn.magicLink({
     email: email.value,
-    callbackURL: "/",
+    callbackURL: "/onboarding",
   })
 
   if (error) {
