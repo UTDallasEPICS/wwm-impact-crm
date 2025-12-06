@@ -1,6 +1,10 @@
 
 datasource db {
   provider = "sqlite"
+  // might get error that says need to move it don't
+  // try running npx prisma migrate dev anyways
+  // it might work
+  // unless you update prisma to v7
   url      = env("DATABASE_URL")
 }
 generator client {

@@ -1,3 +1,5 @@
+// potentiall entirely usesless since we are not using better Auth dunno tho
+
 import { UserRole, type User } from '../../types/user'
 
 
