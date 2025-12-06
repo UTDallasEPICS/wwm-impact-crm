@@ -175,11 +175,12 @@
     
     isSubmitting.value = true
     try {
-      // TODO: Add API call to save user's organization selection
-      // For now, just log and navigate
-      console.log('Selected organization:', selectedOrganization.value)
+      // Save organization to localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('selectedOrganization', JSON.stringify(selectedOrganization.value))
+      }
       
-      // You can add an API call here to save the selection
+      // TODO: Add API call to save user's organization selection to database
       // await $fetch('/api/users/select-organization', {
       //   method: 'POST',
       //   body: { organizationId: selectedOrganization.value.id }

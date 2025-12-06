@@ -44,6 +44,9 @@
               <p class="text-xs text-gray-500">
                 Role: <span class="font-medium">Placeholder</span>
               </p>
+              <p v-if="selectedOrganization" class="text-xs text-gray-500 mt-1">
+                Organization: <span class="font-medium text-blue-600">{{ selectedOrganization.name }}</span>
+              </p>
             </div>
 
             <!-- Logout Button -->
@@ -127,11 +130,34 @@
 <script setup lang="ts">
 import UploadCSV from "~/components/UploadCSV.vue";
 import { authClient } from "../../auth-client";
+import { ref, onMounted } from "vue";
+
+interface Organization {
+  id: string
+  name: string
+}
 
 // Better Auth session hook
 const session = authClient.useSession();
 const data = computed(() => session.value.data);
 const isPending = computed(() => session.value.isPending);
+
+// Selected organization from localStorage
+const selectedOrganization = ref<Organization | null>(null);
+
+// Load organization from localStorage on mount
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('selectedOrganization');
+    if (stored) {
+      try {
+        selectedOrganization.value = JSON.parse(stored);
+      } catch (e) {
+        console.error('Error parsing stored organization:', e);
+      }
+    }
+  }
+});
 
 // Log out
 const handleLogout = async () => {
