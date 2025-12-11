@@ -4,7 +4,7 @@ import { normalizeName } from "./utils/normalize";
 
 import {
   handleConstituents,
-  handleAddresses,
+  /*handleAddresses,
   handleEmails,
   handlePhones,
   handleDonations,
@@ -32,12 +32,12 @@ import {
   handleHouseholds,
   handleHouseholdMembers,
   handleTransactionProcessorAccounts,
-  handleTransactions
+  handleTransactions*/
 } from "./handlers";
 
-export const handlerMap = {
-  constituents: handleConstituents,
-  addresses: handleAddresses,
+export const handlerMap: Record<string, Function> = {
+  "constituents": handleConstituents,
+  /*addresses: handleAddresses,
   emails: handleEmails,
   phones: handlePhones,
   donations: handleDonations,
@@ -65,7 +65,7 @@ export const handlerMap = {
   households: handleHouseholds,
   householdmembers: handleHouseholdMembers,
   transactionprocessoraccounts: handleTransactionProcessorAccounts,
-  transactions: handleTransactions,
+  transactions: handleTransactions,*/
 };
 
 export function getHandler(filename: string) {

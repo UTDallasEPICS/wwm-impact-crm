@@ -2,8 +2,8 @@
 
 import { prisma } from "../utils/batch";
 
-export async function handleConstituents(rows) {
-  const mapped = rows.map(r => ({
+export async function handleConstituents(rows: { AccountNumber: any; Type: any; Status: any; First: any; Middle: any; Last: any; FullName: any; InformalName: any; FormalName: any; RecognitionName: any; SortName: any; Prefix: any; Suffix: any; Birthdate: string | number | Date; JobTitle: any; Employer: any; Website: any; FacebookId: any; TwitterId: any; LinkedInId: any; EnvelopeName: any; CommunicationChannelPreferred: any; LastModifiedDate: string | number | Date; LastModifiedName: any; CreatedDate: string | number | Date; CreatedName: any; }[]) {
+  const mapped = rows.map((r: { AccountNumber: any; Type: any; Status: any; First: any; Middle: any; Last: any; FullName: any; InformalName: any; FormalName: any; RecognitionName: any; SortName: any; Prefix: any; Suffix: any; Birthdate: string | number | Date; JobTitle: any; Employer: any; Website: any; FacebookId: any; TwitterId: any; LinkedInId: any; EnvelopeName: any; CommunicationChannelPreferred: any; LastModifiedDate: string | number | Date; LastModifiedName: any; CreatedDate: string | number | Date; CreatedName: any; }) => ({
     accountNumber: r.AccountNumber,
     type: r.Type ?? null,
     status: r.Status ?? null,
@@ -34,6 +34,5 @@ export async function handleConstituents(rows) {
 
   await prisma.constituent.createMany({
     data: mapped,
-    skipDuplicates: true,
   });
 }

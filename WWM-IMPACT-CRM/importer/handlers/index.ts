@@ -1,5 +1,5 @@
 export * from "./Constituents";
-export * from "./Addresses";
+/* export * from "./Addresses";
 export * from "./Emails";
 export * from "./Phones";
 export * from "./Donations";
@@ -27,3 +27,4 @@ export * from "./Households";
 export * from "./HouseholdMembers";
 export * from "./TransactionProcessorAccounts";
 export * from "./Transactions";
+*/

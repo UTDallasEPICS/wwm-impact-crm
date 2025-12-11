@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
     <h2 class="text-xl font-bold mb-4">Upload CSV for Data Ingestion</h2>
-    <form @submit.prevent="handleUpload" class="space-y-4">
+    <form @submit.prevent="handleUpload" enctype="multipart/form-data" class="space-y-4">
       <input
         type="file"
         multiple
@@ -46,11 +46,13 @@ const handleUpload = async () => {
   files.value.forEach((file) => formData.append("files", file));
 
   try {
-    const response = await $fetch("/api/ingest/upload", {
+    const res = await fetch("/api/ingest/upload", {
       method: "POST",
       body: formData,
     });
-    message.value = `Success: ${response.processed} records processed`;
+
+    const data = await res.json();
+    message.value = `Success: ${data.processed} records processed`;
     error.value = false;
   } catch (err) {
     message.value = err.message || "Upload failed";
@@ -59,4 +61,5 @@ const handleUpload = async () => {
     uploading.value = false;
   }
 };
+
 </script>
