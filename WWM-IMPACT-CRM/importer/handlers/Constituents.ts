@@ -32,7 +32,41 @@ export async function handleConstituents(rows: { AccountNumber: any; Type: any; 
     createdName: r.CreatedName ?? null,
   }));
 
-  await prisma.constituent.createMany({
-    data: mapped,
-  });
+  const upsertPromises = mapped.map((record) =>
+    prisma.constituent.upsert({
+      where: { accountNumber: record.accountNumber },
+      update: {
+        accountNumber: record.accountNumber,
+        type: record.type,
+        status: record.status,
+        firstName: record.firstName,
+        middleName: record.middleName,
+        lastName: record.lastName,
+        fullName: record.fullName,
+        informalName: record.informalName,
+        formalName: record.formalName,
+        recognitionName: record.recognitionName,
+        sortName: record.sortName,
+        prefix: record.prefix,
+        suffix: record.suffix,
+        birthdate: record.birthdate,
+        jobTitle: record.jobTitle,
+        employer: record.employer,
+        website: record.website,
+        facebookId: record.facebookId,
+        twitterId: record.twitterId,
+        linkedInId: record.linkedInId,
+        envelopeName: record.envelopeName,
+        communicationChannelPreferred: record.communicationChannelPreferred,
+        lastModifiedDate: record.lastModifiedDate,
+        lastModifiedName: record.lastModifiedName,
+        createdDate: record.createdDate,
+        createdName: record.createdName,
+      },
+      create: record,
+    })
+  );
+
+  console.log(upsertPromises.length)
+  console.log(await prisma.$transaction(upsertPromises));
 }
