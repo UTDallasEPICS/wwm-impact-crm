@@ -1,7 +1,7 @@
 import prisma from '../../lib/prisma';
 
 export async function handleConstituents(rows: any[]) {
-  const mapped = rows.map((r) => ({
+  const mapped = rows.map(r => ({
     accountNumber: r.AccountNumber, // unique key
     type: r.Type ?? null,
     status: r.Status ?? null,
@@ -30,41 +30,15 @@ export async function handleConstituents(rows: any[]) {
     createdName: r.CreatedName ?? null,
   }));
 
-  const upsertPromises = mapped.map(record =>
-    prisma.constituent.upsert({
-      where: { accountNumber: record.accountNumber }, // using unique key to identify records
-      update: {
-        accountNumber: record.accountNumber,
-        type: record.type,
-        status: record.status,
-        firstName: record.firstName,
-        middleName: record.middleName,
-        lastName: record.lastName,
-        fullName: record.fullName,
-        informalName: record.informalName,
-        formalName: record.formalName,
-        recognitionName: record.recognitionName,
-        sortName: record.sortName,
-        prefix: record.prefix,
-        suffix: record.suffix,
-        birthdate: record.birthdate,
-        jobTitle: record.jobTitle,
-        employer: record.employer,
-        website: record.website,
-        facebookId: record.facebookId,
-        twitterId: record.twitterId,
-        linkedInId: record.linkedInId,
-        envelopeName: record.envelopeName,
-        communicationChannelPreferred: record.communicationChannelPreferred,
-        lastModifiedDate: record.lastModifiedDate,
-        lastModifiedName: record.lastModifiedName,
-        createdDate: record.createdDate,
-        createdName: record.createdName,
-      },
-      create: record,
-    })
+  const tx = await prisma.$transaction(
+    mapped.map(record =>
+      prisma.constituent.upsert({
+        where: { accountNumber: record.accountNumber },
+        update: record,
+        create: record,
+      })
+    )
   );
 
-  const transaction = await prisma.$transaction(upsertPromises);
-  return transaction.length;
+  return tx.length;
 }
