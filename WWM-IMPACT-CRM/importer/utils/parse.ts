@@ -1,7 +1,18 @@
-// importer/utils/parse.ts
-
 import Papa from "papaparse";
 import readXlsxFile from "read-excel-file/node";
+
+export async function parse(type: string, fileBuffer: Buffer) {
+  if (type === "csv") {
+    return await parseCSV(fileBuffer);
+  }
+  else if (type === "xlsx") {
+    return await parseXLSX(fileBuffer);
+  }
+  else {
+    console.log("Can only parse CSV or XLSX");
+    return [];
+  }
+}
 
 export async function parseCSV(fileBuffer: Buffer) {
   return new Promise<any[]>((resolve, reject) => {
@@ -14,33 +25,39 @@ export async function parseCSV(fileBuffer: Buffer) {
   });
 }
 
-/**
- * Parse XLSX file into array of row objects.
- * First row is treated as column headers.
- */
-/*export async function parseXLSX(fileBuffer: Buffer): Promise<any[]> {
-  // read-excel-file expects `{ buffer }`
-  const typedArray = new Uint8Array(fileBuffer);
-  const rawBuffer: ArrayBuffer = typedArray.buffer; 
-  const rows = await readXlsxFile(input: Input);
+export async function parseXLSX(fileBuffer: Buffer): Promise<any[]> {
+  const rawRows = await readXlsxFile(fileBuffer);
 
-  if (rows.length === 0) return [];
+  if (!rawRows.length) return [];
 
-  const headers = rows[0].map((h) => String(h || "").trim());
+  const headers = (rawRows[0] ?? [])
+    .map((h) => (h === null || h === undefined ? "" : String(h).trim()));
 
-  const results = [];
+  if (!headers.length) return [];
 
-  for (let i = 1; i < rows.length; i++) {
-    const row = rows[i];
+  const rows: Record<string, any>[] = [];
+
+  for (let i = 1; i < rawRows.length; i++) {
+    const rawRow = rawRows[i];
     const obj: Record<string, any> = {};
 
     for (let col = 0; col < headers.length; col++) {
       const header = headers[col];
-      obj[header] = row[col] ?? null;
+      if (!header || rawRow === undefined) continue;
+
+      const value = rawRow[col];
+      
+      if (value === undefined || value === null) {
+        obj[header] = null;
+      } else if (value instanceof Date) {
+        obj[header] = value;
+      } else {
+        obj[header] = String(value);
+      }
     }
 
-    results.push(obj);
+    rows.push(obj);
   }
 
-  return results;
-}*/
+  return rows;
+}

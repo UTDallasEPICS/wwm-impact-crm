@@ -1,5 +1,3 @@
-// importer/utils/normalize.ts
-
 export function normalizeName(name: string): string {
   if (!name) return "";
 

@@ -1,10 +1,8 @@
-// importer/handlers/Constituents.ts
+import prisma from '../../lib/prisma';
 
-import { prisma } from "../utils/batch";
-
-export async function handleConstituents(rows: { AccountNumber: any; Type: any; Status: any; First: any; Middle: any; Last: any; FullName: any; InformalName: any; FormalName: any; RecognitionName: any; SortName: any; Prefix: any; Suffix: any; Birthdate: string | number | Date; JobTitle: any; Employer: any; Website: any; FacebookId: any; TwitterId: any; LinkedInId: any; EnvelopeName: any; CommunicationChannelPreferred: any; LastModifiedDate: string | number | Date; LastModifiedName: any; CreatedDate: string | number | Date; CreatedName: any; }[]) {
-  const mapped = rows.map((r: { AccountNumber: any; Type: any; Status: any; First: any; Middle: any; Last: any; FullName: any; InformalName: any; FormalName: any; RecognitionName: any; SortName: any; Prefix: any; Suffix: any; Birthdate: string | number | Date; JobTitle: any; Employer: any; Website: any; FacebookId: any; TwitterId: any; LinkedInId: any; EnvelopeName: any; CommunicationChannelPreferred: any; LastModifiedDate: string | number | Date; LastModifiedName: any; CreatedDate: string | number | Date; CreatedName: any; }) => ({
-    accountNumber: r.AccountNumber,
+export async function handleConstituents(rows: any[]) {
+  const mapped = rows.map((r) => ({
+    accountNumber: r.AccountNumber, // unique key
     type: r.Type ?? null,
     status: r.Status ?? null,
     firstName: r.First ?? null,
@@ -32,9 +30,9 @@ export async function handleConstituents(rows: { AccountNumber: any; Type: any; 
     createdName: r.CreatedName ?? null,
   }));
 
-  const upsertPromises = mapped.map((record) =>
+  const upsertPromises = mapped.map(record =>
     prisma.constituent.upsert({
-      where: { accountNumber: record.accountNumber },
+      where: { accountNumber: record.accountNumber }, // using unique key to identify records
       update: {
         accountNumber: record.accountNumber,
         type: record.type,
@@ -67,6 +65,6 @@ export async function handleConstituents(rows: { AccountNumber: any; Type: any; 
     })
   );
 
-  console.log(upsertPromises.length)
-  console.log(await prisma.$transaction(upsertPromises));
+  const transaction = await prisma.$transaction(upsertPromises);
+  return transaction.length;
 }

@@ -7,14 +7,14 @@ export default defineEventHandler(async (event) => {
 
   if (form) {
     for (const item of form) {
-      if (item.type === "application/vnd.ms-excel" && item.filename) {
+      if ((item.type === ".csv" || item.type === "application/vnd.ms-excel") && item.filename) {
         files.push({
           name: item.filename,
           type: "csv",
           buffer: item.data,
         });
       }
-      if (item.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" && item.filename) {
+      if ((item.type === ".xlsx" || item.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") && item.filename) {
         files.push({
           name: item.filename,
           type: "xlsx",
@@ -24,7 +24,6 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  await runImporter(files);
-
-  return { status: "ok" };
+  const processed = await runImporter(files);
+  return { processed: processed };
 });

@@ -1,5 +1,3 @@
-// importer/handlerMap.ts
-
 import { normalizeName } from "./utils/normalize";
 
 import {
