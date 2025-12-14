@@ -25,10 +25,9 @@ import {
   // handleFileAttachments,
   // handleProcessingInfos,
   // handleEmailInterests,
-  // handleCustomFields,
-  // handleCustomValues,
-  // handleHouseholds,
-  // handleHouseholdMembers,
+  handleCustomFields,
+  handleHouseholds,
+  handleUsers,
   // handleTransactionProcessorAccounts,
   // handleTransactions
 } from "./handlers";
@@ -58,10 +57,9 @@ export const handlerMap: Record<string, Function> = {
   // fileattachments: handleFileAttachments,
   // processinginfos: handleProcessingInfos,
   // emailinterests: handleEmailInterests,
-  // customfields: handleCustomFields,
-  // customvalues: handleCustomValues,
-  // households: handleHouseholds,
-  // householdmembers: handleHouseholdMembers,
+  "customfields": handleCustomFields,
+  "households": handleHouseholds,
+  "users": handleUsers,
   // transactionprocessoraccounts: handleTransactionProcessorAccounts,
   // transactions: handleTransactions
 };
