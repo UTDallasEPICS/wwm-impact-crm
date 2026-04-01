@@ -1,0 +1,70 @@
+<!-- Weblinks (Default navigation): Home | Fund Dashboard | Admin (restrict to admin web roles) | Sign Out via profile -->
+{% assign rp_base = '' %}
+{% if website.adx_partialurl %}
+  {% assign rp_base = '/' | append: website.adx_partialurl %}
+{% endif %}
+{% assign show_admin_link = false %}
+{% if user %}
+  {% for role in user.roles %}
+    {% if role.name == 'Super Admin' or role.name == 'Finance Admin' %}
+      {% assign show_admin_link = true %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+<div class="reporting-portal rp-page-bg">
+  <div class="container py-4 py-md-5">
+    <header class="mb-4">
+      <h1>Welcome to Impact Financial Reporting</h1>
+      <p class="rp-muted mb-0">A private portal for fund- and project-scoped revenue reporting. Sign in to view dashboards aligned to your assigned access.</p>
+    </header>
+
+    {% if user %}
+      <p class="mb-4"><span class="rp-badge">Signed in</span> <span class="rp-muted">Hello, {{ user.fullname | default: 'colleague' }}.</span></p>
+    {% else %}
+      <p class="mb-4"><a class="rp-btn-primary" href="{% if website.adx_partialurl %}/{{ website.adx_partialurl }}{% endif %}{{ website.sign_in_url_substitution }}">Sign in to continue</a></p>
+    {% endif %}
+
+    <section class="mb-5" aria-labelledby="home-quicklinks">
+      <h2 id="home-quicklinks" class="h3 mb-3">Where to go next</h2>
+      <div class="rp-nav-cards">
+        <a class="rp-nav-card" href="{{ rp_base }}/fund-dashboard">
+          <span class="rp-badge" style="font-size:0.65rem;">Primary</span>
+          <h3>Fund dashboard</h3>
+          <p class="rp-muted mb-0">Month-by-month revenue summary, donation detail, and embedded Power BI for the fund or project you are allowed to see.</p>
+        </a>
+        <a class="rp-nav-card" href="{{ rp_base }}/sign-in">
+          <h3>Sign-in help</h3>
+          <p class="rp-muted mb-0">Use your Microsoft or organization account. Contact support if you cannot access the portal.</p>
+        </a>
+        {% if show_admin_link %}
+        <a class="rp-nav-card" href="{{ rp_base }}/admin-user-access">
+          <span class="rp-badge" style="font-size:0.65rem;background:#0f172a;">Admin</span>
+          <h3>User access</h3>
+          <p class="rp-muted mb-0">Manage portal users, roles, and which funds or projects they can see.</p>
+        </a>
+        {% endif %}
+      </div>
+    </section>
+
+    <section aria-labelledby="home-stats">
+      <h2 id="home-stats" class="h3 mb-3">At a glance <span class="rp-muted" style="font-weight:400;font-size:1rem;">(placeholders)</span></h2>
+      <div class="rp-stat-grid">
+        <div class="rp-stat">
+          <div class="rp-stat__label">Funds you can view</div>
+          <div class="rp-stat__value">—</div>
+          <p class="rp-muted small mb-0">Bind to Dataverse / role logic in production.</p>
+        </div>
+        <div class="rp-stat">
+          <div class="rp-stat__label">Last report refresh</div>
+          <div class="rp-stat__value">—</div>
+          <p class="rp-muted small mb-0">From Power BI dataset refresh.</p>
+        </div>
+        <div class="rp-stat">
+          <div class="rp-stat__label">Your access level</div>
+          <div class="rp-stat__value">—</div>
+          <p class="rp-muted small mb-0">Mirrors your web role(s).</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

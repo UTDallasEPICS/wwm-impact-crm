@@ -1,0 +1,136 @@
+<div class="reporting-portal rp-page-bg">
+  <div class="container py-4 py-lg-5">
+    <header class="mb-3">
+      <p class="rp-muted small mb-1">Fund- and project-scoped reporting</p>
+      <h1 id="fund-dashboard-title">Community Impact Fund — Dashboard</h1>
+      <p class="rp-muted">Replace the title above with the selected fund or project name from Dataverse. The visuals below are scoped to <strong>this fund only</strong>, not organization-wide totals.</p>
+    </header>
+
+    <div class="rp-scope-banner" role="status">
+      <span class="rp-badge">Scoped view</span>
+      <span>You are viewing data for <strong>Community Impact Fund</strong> based on your assigned access. Other funds remain hidden unless your administrator grants them.</span>
+    </div>
+
+    <div class="rp-toolbar" role="group" aria-label="Report filters">
+      <div>
+        <label for="fund-select">Fund or project</label>
+        <select id="fund-select" class="rp-form-select" aria-describedby="fund-select-help">
+          <option selected>Community Impact Fund</option>
+          <option>Education Project (FY26)</option>
+          <option>General Operating (restricted)</option>
+        </select>
+        <p id="fund-select-help" class="rp-muted small mt-1 mb-0">Populate options from a filtered view: only funds linked to the contact’s allowed projects.</p>
+      </div>
+      <div>
+        <label for="date-from">Date range</label>
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+          <input type="date" id="date-from" class="rp-form-control" aria-label="Start date" />
+          <span class="rp-muted">to</span>
+          <input type="date" id="date-to" class="rp-form-control" aria-label="End date" />
+        </div>
+        <p class="rp-muted small mt-1 mb-0">Pass as Power BI report parameters or query string when embedding.</p>
+      </div>
+    </div>
+
+    <section class="rp-card rp-card--emphasis" aria-labelledby="summary-revenue-heading">
+      <div class="rp-card__title">
+        <span class="rp-icon" aria-hidden="true"><span class="fa-solid fa-chart-line"></span></span>
+        <h2 id="summary-revenue-heading" class="h4 mb-0">Summary revenue by month</h2>
+      </div>
+      <p class="rp-muted small">Top visual: month-by-month revenue for the selected fund (Bloomerang-style summary, single-fund scope). Replace this block with your embedded Power BI <strong>report page</strong> or bookmark showing only the line or column chart.</p>
+      <div class="rp-pbi-placeholder rp-pbi-placeholder--hero" role="img" aria-label="Embedded Power BI chart placeholder">
+        <div>
+          <p class="rp-pbi-placeholder__title">Embedded Power BI — Revenue trend</p>
+          <p class="mb-0">Use Power Pages Power BI component or secure embed token. Filter the underlying dataset by FundId and user’s allowed funds in RLS or Dataverse.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="rp-stat-grid" aria-label="Quick statistics">
+      <div class="rp-stat">
+        <div class="rp-stat__label">Total raised (period)</div>
+        <div class="rp-stat__value">$0</div>
+      </div>
+      <div class="rp-stat">
+        <div class="rp-stat__label">Donations</div>
+        <div class="rp-stat__value">0</div>
+      </div>
+      <div class="rp-stat">
+        <div class="rp-stat__label">Average gift</div>
+        <div class="rp-stat__value">$0</div>
+      </div>
+      <div class="rp-stat">
+        <div class="rp-stat__label">Largest gift</div>
+        <div class="rp-stat__value">$0</div>
+      </div>
+    </div>
+
+    <section class="rp-card" aria-labelledby="transactions-heading">
+      <div class="rp-card__title">
+        <span class="rp-icon" aria-hidden="true"><span class="fa-solid fa-table"></span></span>
+        <h2 id="transactions-heading" class="h4 mb-0">Donation and transaction detail</h2>
+      </div>
+      <p class="rp-muted small">This table should mirror your Power BI detailed grid or a second embedded report page focused on transactions. Include columns your finance team needs for review.</p>
+      <div class="rp-table-wrap">
+        <table class="rp-table">
+          <caption class="visually-hidden">Sample transactions for the selected fund</caption>
+          <thead>
+            <tr>
+              <th scope="col">Donor</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Date</th>
+              <th scope="col">Fund / project</th>
+              <th scope="col">Campaign</th>
+              <th scope="col">Payment method</th>
+              <th scope="col">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>A. Rivera</td>
+              <td>$250.00</td>
+              <td>Mar 12, 2026</td>
+              <td>Community Impact Fund</td>
+              <td>Spring appeal</td>
+              <td>Credit card</td>
+              <td>TXN-10021</td>
+            </tr>
+            <tr>
+              <td>Community Giving LLC</td>
+              <td>$5,000.00</td>
+              <td>Mar 2, 2026</td>
+              <td>Community Impact Fund</td>
+              <td>—</td>
+              <td>ACH</td>
+              <td>TXN-10008</td>
+            </tr>
+            <tr>
+              <td>M. Chen</td>
+              <td>$100.00</td>
+              <td>Feb 19, 2026</td>
+              <td>Community Impact Fund</td>
+              <td>Newsletter</td>
+              <td>Credit card</td>
+              <td>TXN-09987</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="rp-muted small mt-3 mb-0">Replace static HTML with Power BI embedded table visual or paginated report for print-friendly detail.</p>
+    </section>
+
+    <section class="rp-card" aria-labelledby="full-report-heading">
+      <div class="rp-card__title">
+        <span class="rp-icon" aria-hidden="true"><span class="fa-solid fa-chart-pie"></span></span>
+        <h2 id="full-report-heading" class="h4 mb-0">Full Power BI report</h2>
+      </div>
+      <p class="rp-muted small">Optional second container for the full report with tabs. Keep the summary chart and transaction table above as the primary story for executives.</p>
+      <div class="rp-pbi-placeholder" role="img" aria-label="Embedded full Power BI report placeholder">
+        <div>
+          <p class="rp-pbi-placeholder__title">Embedded Power BI — Full report</p>
+          <p class="mb-0">16:9 responsive iframe or Power BI liquid component. Enforce row-level security so users only see permitted funds and projects.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

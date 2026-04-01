@@ -1,0 +1,69 @@
+{% assign is_admin = false %}
+{% if user %}
+  {% for role in user.roles %}
+    {% if role.name == 'Super Admin' or role.name == 'Finance Admin' %}
+      {% assign is_admin = true %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+<div class="reporting-portal rp-page-bg">
+  <div class="container py-4 py-lg-5">
+    {% unless user %}
+      <div class="rp-card">
+        <h1 class="h3">Sign in required</h1>
+        <p class="rp-muted">Administrator tools require authentication.</p>
+        <a class="rp-btn-primary" href="{% if website.adx_partialurl %}/{{ website.adx_partialurl }}{% endif %}{{ website.sign_in_url_substitution }}">Sign in</a>
+      </div>
+    {% else %}
+      {% unless is_admin %}
+      <div class="rp-card rp-card--emphasis">
+        <h1 class="h3">Restricted area</h1>
+        <p class="rp-muted">This page is only available to users with the <strong>Super Admin</strong> or <strong>Finance Admin</strong> web role. Organization and project users and limited viewers should use the Fund dashboard.</p>
+        <a class="rp-btn-primary mt-2" href="{% if website.adx_partialurl %}/{{ website.adx_partialurl }}{% endif %}/">Back to home</a>
+      </div>
+      {% else %}
+      <header class="mb-4">
+        <p class="rp-muted small mb-1">Administration</p>
+        <h1>User access and permissions</h1>
+        <p class="rp-muted">Placeholder layout for managing who can see which funds, projects, and embedded reports. Implement with lists, forms, or admin apps; align web role names with your Dataverse security model.</p>
+      </header>
+
+      <section class="rp-admin-section" aria-labelledby="admin-users">
+        <h2 id="admin-users" class="h4">User directory</h2>
+        <p class="rp-muted small">Add an entity list or Dataverse grid of portal contacts. Columns: name, email, last sign-in, primary organization.</p>
+        <div class="rp-pbi-placeholder" style="min-height: 140px;">
+          <p class="rp-pbi-placeholder__title mb-0">Placeholder — user list</p>
+        </div>
+      </section>
+
+      <section class="rp-admin-section" aria-labelledby="admin-roles">
+        <h2 id="admin-roles" class="h4">Role assignment</h2>
+        <p class="rp-muted small">Recommended web roles for this portal:</p>
+        <ul class="rp-muted small text-start">
+          <li><strong>Super Admin</strong> — full portal and integration settings.</li>
+          <li><strong>Finance Admin</strong> — access to this admin page and all funds/reports (or delegate by organization).</li>
+          <li><strong>Organization Project User</strong> — fund dashboard for assigned projects only.</li>
+          <li><strong>Limited Viewer</strong> — read-only dashboard; optional export restrictions in Power BI.</li>
+        </ul>
+        <div class="rp-pbi-placeholder" style="min-height: 120px;">
+          <p class="rp-pbi-placeholder__title mb-0">Placeholder — assign web roles</p>
+        </div>
+      </section>
+
+      <section class="rp-admin-section" aria-labelledby="admin-access">
+        <h2 id="admin-access" class="h4">Organization, fund, and project access</h2>
+        <p class="rp-muted small">Model many-to-many relationships between contacts and funds or projects in Dataverse. Table permissions and Power BI RLS should use the same keys (for example FundId, ProjectId).</p>
+        <div class="rp-pbi-placeholder" style="min-height: 140px;">
+          <p class="rp-pbi-placeholder__title mb-0">Placeholder — access matrix</p>
+        </div>
+      </section>
+
+      <section class="rp-admin-section" aria-labelledby="admin-notes">
+        <h2 id="admin-notes" class="h4">Permission notes</h2>
+        <p class="rp-muted small mb-0">Document audit requirements, data retention, and who approves new portal users. Keep this section updated for your finance and compliance stakeholders.</p>
+      </section>
+      {% endunless %}
+    {% endunless %}
+  </div>
+</div>

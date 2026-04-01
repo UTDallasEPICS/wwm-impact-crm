@@ -1,0 +1,28 @@
+{% assign rp_base = '' %}
+{% if website.adx_partialurl %}
+  {% assign rp_base = '/' | append: website.adx_partialurl %}
+{% endif %}
+<div class="reporting-portal rp-page-bg">
+  <div class="container py-5">
+    <div class="rp-signin-hero">
+      <h1>Sign in to Impact Financial Reporting</h1>
+      <p class="rp-muted">This is a private reporting portal. Use your <strong>Microsoft work or school account</strong> or the sign-in method your organization configured (for example, Azure AD B2C).</p>
+    </div>
+
+    {% if user %}
+      <div class="rp-card mt-4" style="max-width: 520px; margin-left: auto; margin-right: auto;">
+        <p class="mb-2">You are already signed in as <strong>{{ user.fullname | escape }}</strong>.</p>
+        <a class="rp-btn-primary" href="{{ rp_base }}/">Go to home</a>
+      </div>
+    {% else %}
+      <div class="rp-card mt-4" style="max-width: 520px; margin-left: auto; margin-right: auto; text-align: center;">
+        <h2 class="h4 mb-3">Organization sign-in</h2>
+        <p class="rp-muted small mb-4">Do not use a personal email unless your nonprofit issued it. Need an account? Contact your program or finance administrator.</p>
+        <p class="mb-4">
+          <a class="rp-btn-primary" href="{% if website.adx_partialurl %}/{{ website.adx_partialurl }}{% endif %}{{ website.sign_in_url_substitution }}">Sign in with Microsoft</a>
+        </p>
+        <p class="rp-muted small mb-0">Trouble signing in? Email <a href="mailto:support@yourorganization.org">support@yourorganization.org</a> with your name and organization. Do not send passwords by email.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
